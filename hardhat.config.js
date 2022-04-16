@@ -1,4 +1,4 @@
-const { privateKey, polygonscanApiKey, etherscanApiKey, alchemyApiKey } = require("./secrets.json");
+const { privateKey, alchemyApiKey } = require("./secrets.json");
 
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
