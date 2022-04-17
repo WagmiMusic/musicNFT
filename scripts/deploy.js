@@ -8,8 +8,8 @@ async function main() {
   const contract = await factory.deploy();
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);
-  const tx = await contract.safeTransferFrom(myAddr, toAddr, 1, 1, "0x");
-  await tx.wait();
+  // const tx = await contract.safeTransferFrom(myAddr, toAddr, 1, 1, "0x");
+  // await tx.wait();
 }
 
 main()

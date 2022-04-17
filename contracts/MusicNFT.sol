@@ -14,7 +14,7 @@ contract MusicNFT is ERC1155, Ownable {
 
     mapping(address => bool) private _isAuthenticated;
 
-    constructor() ERC1155("ipfs://QmWYoz78X9B4s9cHwRv6UW11aBDFzmYa4oVWf1mUiNmAzp/metadata/{id}.json") {
+    constructor() ERC1155("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json") {
         mint(1, 2);
     }
 
@@ -32,6 +32,7 @@ contract MusicNFT is ERC1155, Ownable {
     ) internal override view {
         if (from == address(0)) { return; }
         require(_isAuthenticated[to], "This address is not authenticated");
+        require(balanceOf(_msgSender(), ids[0]) <= 1);
     }
 
     function name() public view virtual returns (string memory) {
