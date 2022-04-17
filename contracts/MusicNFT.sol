@@ -9,56 +9,88 @@ import "hardhat/console.sol";
 contract MusicNFT is ERC1155, Ownable {
     using SafeMath for uint256;
 
+    // コントラクト名
     string private _name;
+    // NFT単位
     string private _symbol;
+    // 総供給量
     uint256 public totalSupply;
+    //全ての購入制限の可否
+    bool private _whenAllReleased = false;
+    //販売状態
+    bool private _nowOnSale = false;
     
-    //レアリティごとの供給量
+    //@notice レアリティごとの供給量
     mapping(uint256 => uint256) private _supplyOfEach;
-    //レアリティごとの最大供給量
+    //@notice レアリティごとの最大供給量
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
-    //WhiteList用
+    //@notice WhiteList用
     mapping(address => bool) private _isAuthenticated;
 
     constructor() ERC1155("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json") {
-        // Normal A
+
+        /*
+        * ミント上限の設定
+        * for giveaway(WL対象)
+        */
+        // Normal for domesticaly giveaway
         _AMOUNT_OF_MAX_MINT[1] = 10;
-        // Normal B
+        // Normal for internationally giveaway
         _AMOUNT_OF_MAX_MINT[2] = 10;
-        // Normal C
-        _AMOUNT_OF_MAX_MINT[3] = 20;
-        // Normal D
-        _AMOUNT_OF_MAX_MINT[4] = 20;
-        // NTP Collab A
+
+        /*
+        * ミント上限の設定
+        * for airdrop(WL対象)
+        */
+        // NTP Collab male A for airdrop
+        _AMOUNT_OF_MAX_MINT[3] = 1;
+        // NTP Collab male B for airdrop
+        _AMOUNT_OF_MAX_MINT[4] = 4;
+        // NTP Collab female A for airdrop
         _AMOUNT_OF_MAX_MINT[5] = 1;
-        // NTP Collab B
+        // NTP Collab female B for airdrop
         _AMOUNT_OF_MAX_MINT[6] = 4;
-        // NTP Collab C
+        // Cool Rulers Collab male A for airdrop
         _AMOUNT_OF_MAX_MINT[7] = 1;
-        // NTP Collab D
-        _AMOUNT_OF_MAX_MINT[8] = 4;
-        // Cool Rulers Collab A
-        _AMOUNT_OF_MAX_MINT[9] = 1;
-        // Cool Rulers Collab B
+        // Cool Rulers Collab female A for airdrop
+        _AMOUNT_OF_MAX_MINT[8] = 1;
+
+        /*
+        * ミント上限の設定
+        * for presale(WL対象)
+        */
+        // Normal for presale
+        _AMOUNT_OF_MAX_MINT[9] = 20;
+        // Cool Rulers Collab male B for presale
         _AMOUNT_OF_MAX_MINT[10] = 2;
-        // Cool Rulers Collab C
+        // Cool Rulers Collab female B for presale
         _AMOUNT_OF_MAX_MINT[11] = 2;
-        // Cool Rulers Collab D
-        _AMOUNT_OF_MAX_MINT[12] = 1;
-        // Cool Rulers Collab E
-        _AMOUNT_OF_MAX_MINT[13] = 2;
-        // Cool Rulers Collab F
-        _AMOUNT_OF_MAX_MINT[14] = 2;
-        // Acappella A
-        _AMOUNT_OF_MAX_MINT[15] = 5;
-        // Acappella B
-        _AMOUNT_OF_MAX_MINT[16] = 5;
-        // Instrumental A
+        // Acappella for presale
+        _AMOUNT_OF_MAX_MINT[12] = 5;
+        // Instrumental presale
+        _AMOUNT_OF_MAX_MINT[13] = 5;
+
+        /*
+        * ミント上限の設定
+        * for public sale
+        */
+        // Normal for public sale
+        _AMOUNT_OF_MAX_MINT[14] = 20;
+        // Cool Rulers Collab male C for public sale
+        _AMOUNT_OF_MAX_MINT[15] = 2;
+        // Cool Rulers Collab female C for public sale
+        _AMOUNT_OF_MAX_MINT[16] = 2;
+        // Acappella for public sale
         _AMOUNT_OF_MAX_MINT[17] = 5;
-        // Instrumental A
+        // Instrumental public sale
         _AMOUNT_OF_MAX_MINT[18] = 5;
     }
 
+    /*
+    * @notice 最大Mint数の制限
+    * @param _tokenIds ミントするレアリティのID
+    * @param _amounts ミントする数
+    */
     modifier supplyCheck(
         uint256 _tokenId,
         uint256 _amount
@@ -67,6 +99,11 @@ contract MusicNFT is ERC1155, Ownable {
         _;
     }
 
+    /*
+    * @notice 最大Mint数の制限(複数Mint用)
+    * @param _tokenIds ミントするレアリティのID
+    * @param _amounts ミントする数
+    */
     modifier supplyCheckBatch(
         uint256[] memory _tokenIds,
         uint256[] memory _amounts
@@ -77,6 +114,12 @@ contract MusicNFT is ERC1155, Ownable {
         _;
     }
 
+    /*
+    * @title mint
+    * @notice ミント
+    * @param _tokenId ミントするレアリティのID
+    * @param _amount ミントする数
+    */
     function mint(uint256 _tokenId, uint256 _amount) public onlyOwner supplyCheck(_tokenId, _amount){
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
@@ -84,6 +127,12 @@ contract MusicNFT is ERC1155, Ownable {
         _mint(_msgSender(), _tokenId, _amount, "");
     }
     
+    /*
+    * @title mintBatch
+    * @notice 複数レアリティのミント
+    * @param _tokenIds ミントするレアリティのID
+    * @param _amounts ミントする数
+    */
     function mintBatch(
         uint256[] memory _tokenIds,
         uint256[] memory _amounts
@@ -96,6 +145,17 @@ contract MusicNFT is ERC1155, Ownable {
         _mintBatch(_msgSender(), _tokenIds, _amounts, "");
     }
 
+    /*
+    * @title _beforeTokenTransfer
+    * @notice transferに連動する購入制限
+    * @param operator 実行者アドレス
+    * @param from 移転元アドレス
+    * @param to 移転先アドレス
+    * @param ids 移転するレアリティのID
+    * @param amounts 移転する数
+    * @param data オプションパラメータ
+    * @dev ConsumerApiからprofileを取得して格納
+    */
     function _beforeTokenTransfer(
         address operator,
         address from,
@@ -106,15 +166,67 @@ contract MusicNFT is ERC1155, Ownable {
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        if (from == address(0)) { return; }
-        require(_isAuthenticated[to], "This address is not authenticated");
-        require(balanceOf(_msgSender(), ids[0]) <= 1, "Can't buy same songs more than two record");
+        if (from == address(0) || from != owner()) { return; }
+
+        require(_nowOnSale, "Sale is suspended now");
+
+        if(_nowOnSale && !_whenAllReleased){
+            for (uint256 i = 0; i < ids.length; i++) {
+                /*
+                *レアリティごとの販売制限の指定(ToDo)
+                */
+                if (ids[i] <= 8){
+                    operator == owner();
+                }
+                else if (ids[i] <= 13) {
+                    require(_isAuthenticated[_msgSender()], "This address is not authenticated");
+                } else {
+                    require(balanceOf(_msgSender(), ids[i]) <= 1, "Can't buy same songs more than two record");
+                }
+            }
+        }
     }
 
+    /*
+    * @title releasedLimitations
+    * @notice 全ての購入制限の解除
+    */
+    function releasedLimitations() public onlyOwner {
+        _whenAllReleased = true;
+    }
+
+    /*
+    * @title releasedLimitations
+    * @notice 販売開始
+    */
+    function startSale() public onlyOwner {
+        _nowOnSale = true;
+    }
+
+    /*
+    * @title releasedLimitations
+    * @notice 販売停止
+    */
+    function suspendSale() public onlyOwner {
+        _nowOnSale = false;
+    }
+
+    /*
+    * @title name
+    * @notice コントラクト名の呼び出し
+    * @return _name コントラクト名
+    * @dev OpenSeaに表示するための技術要件
+    */
     function name() public view virtual returns (string memory) {
         return _name;
     }
 
+    /*
+    * @title symbol
+    * @notice NFT単位の呼び出し
+    * @return _symbol NFT単位
+    * @dev OpenSeaに表示するための技術要件
+    */
     function symbol() public view virtual returns (string memory) {
         return _symbol;
     }
