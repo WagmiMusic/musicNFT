@@ -63,7 +63,7 @@ contract MusicNFT is ERC1155, Ownable {
         uint256 _tokenId,
         uint256 _amount
     ){
-        require(_supplyOfEach[_tokenId] + _amount <= _AMOUNT_OF_MAX_MINT[_tokenId]);
+        require(_supplyOfEach[_tokenId] + _amount <= _AMOUNT_OF_MAX_MINT[_tokenId], "Max supply reached");
         _;
     }
 
@@ -72,7 +72,7 @@ contract MusicNFT is ERC1155, Ownable {
         uint256[] memory _amounts
     ){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
-            require(_supplyOfEach[_tokenIds[i]] + _amounts[i] <= _AMOUNT_OF_MAX_MINT[_tokenIds[i]]);
+            require(_supplyOfEach[_tokenIds[i]] + _amounts[i] <= _AMOUNT_OF_MAX_MINT[_tokenIds[i]], "Max supply reached");
         }
         _;
     }
@@ -108,7 +108,7 @@ contract MusicNFT is ERC1155, Ownable {
 
         if (from == address(0)) { return; }
         require(_isAuthenticated[to], "This address is not authenticated");
-        require(balanceOf(_msgSender(), ids[0]) <= 1, "Max supply reached");
+        require(balanceOf(_msgSender(), ids[0]) <= 1, "Can't buy same songs more than two record");
     }
 
     function name() public view virtual returns (string memory) {
