@@ -40,50 +40,54 @@ contract MusicNFT is ERC1155, Ownable {
 
         /*
         * ミント上限の設定
-        * for airdrop(WL対象)
+        * for Raffle(WL対象)
         */
-        // NTP Collab male A for airdrop
+        // Cool Rulers Collab male for WAGMI Raffle
         _AMOUNT_OF_MAX_MINT[3] = 1;
-        // NTP Collab male B for airdrop
-        _AMOUNT_OF_MAX_MINT[4] = 4;
-        // NTP Collab female A for airdrop
+        // Cool Rulers Collab female for WAGMI Raffle
+        _AMOUNT_OF_MAX_MINT[4] = 1;
+        // Rimix for RTTT Raffle
         _AMOUNT_OF_MAX_MINT[5] = 1;
-        // NTP Collab female B for airdrop
-        _AMOUNT_OF_MAX_MINT[6] = 4;
-        // Cool Rulers Collab male A for airdrop
-        _AMOUNT_OF_MAX_MINT[7] = 1;
-        // Cool Rulers Collab female A for airdrop
-        _AMOUNT_OF_MAX_MINT[8] = 1;
 
         /*
         * ミント上限の設定
         * for presale(WL対象)
         */
         // Normal for presale
-        _AMOUNT_OF_MAX_MINT[9] = 20;
-        // Cool Rulers Collab male B for presale
+        _AMOUNT_OF_MAX_MINT[6] = 20;
+        // NTP Collab male for presale
+        _AMOUNT_OF_MAX_MINT[7] = 3;
+        // NTP Collab female for presale
+        _AMOUNT_OF_MAX_MINT[8] = 3;
+        // Cool Rulers Collab male for presale
+        _AMOUNT_OF_MAX_MINT[9] = 2;
+        // Cool Rulers Collab female for presale
         _AMOUNT_OF_MAX_MINT[10] = 2;
-        // Cool Rulers Collab female B for presale
-        _AMOUNT_OF_MAX_MINT[11] = 2;
         // Acappella for presale
+        _AMOUNT_OF_MAX_MINT[11] = 5;
+        // Instrumental for presale
         _AMOUNT_OF_MAX_MINT[12] = 5;
-        // Instrumental presale
-        _AMOUNT_OF_MAX_MINT[13] = 5;
 
         /*
         * ミント上限の設定
         * for public sale
         */
         // Normal for public sale
-        _AMOUNT_OF_MAX_MINT[14] = 20;
-        // Cool Rulers Collab male C for public sale
+        _AMOUNT_OF_MAX_MINT[13] = 10;
+        // NTP Collab male for public sale
+        _AMOUNT_OF_MAX_MINT[14] = 2;
+        // NTP Collab female for public sale
         _AMOUNT_OF_MAX_MINT[15] = 2;
-        // Cool Rulers Collab female C for public sale
+        // Cool Rulers Collab male for public sale
         _AMOUNT_OF_MAX_MINT[16] = 2;
+        // Cool Rulers Collab female for public sale
+        _AMOUNT_OF_MAX_MINT[17] = 2;
         // Acappella for public sale
-        _AMOUNT_OF_MAX_MINT[17] = 5;
-        // Instrumental public sale
         _AMOUNT_OF_MAX_MINT[18] = 5;
+        // Instrumental for public sale
+        _AMOUNT_OF_MAX_MINT[19] = 5;
+        // Remix for public sale
+        _AMOUNT_OF_MAX_MINT[20] = 9;
     }
 
     /*
@@ -175,10 +179,10 @@ contract MusicNFT is ERC1155, Ownable {
                 /*
                 *レアリティごとの販売制限の指定(ToDo)
                 */
-                if (ids[i] <= 8){
+                if (ids[i] <= 5){
                     operator == owner();
                 }
-                else if (ids[i] <= 13) {
+                else if (ids[i] <= 12) {
                     require(_isAuthenticated[_msgSender()], "This address is not authenticated");
                 } else {
                     require(balanceOf(_msgSender(), ids[i]) <= 1, "Can't buy same songs more than two record");
