@@ -212,6 +212,26 @@ contract MusicNFT is ERC1155, Ownable {
     }
 
     /*
+    * @title reveal
+    * @notice リビール用
+    */
+    function reveal() public onlyOwner {
+        _setURI("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json");
+    }
+
+    /*
+    * @title reveal
+    * @notice 緊急リビール用
+    * @param _EMGuri 緊急用uri
+    * @dev 画像データに対する信頼性の点から，要検討
+    */
+    function EMGreveal(
+        string memory _EMGuri
+    ) public onlyOwner {
+        _setURI(_EMGuri);
+    }
+
+    /*
     * @title name
     * @notice コントラクト名の呼び出し
     * @return _name コントラクト名
