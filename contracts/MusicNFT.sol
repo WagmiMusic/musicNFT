@@ -184,8 +184,10 @@ contract MusicNFT is ERC1155, Ownable {
                 }
                 else if (ids[i] <= 12) {
                     require(_isAuthenticated[_msgSender()], "This address is not authenticated");
+                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+
                 } else {
-                    require(balanceOf(_msgSender(), ids[i]) <= 1, "Can't buy same songs more than two record");
+                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 }
             }
         }
