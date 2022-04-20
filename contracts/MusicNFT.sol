@@ -9,6 +9,8 @@ import "hardhat/console.sol";
 contract MusicNFT is ERC1155, Ownable {
     using SafeMath for uint256;
 
+    // コントラクトの作成者
+    address creator;
     // コントラクト名
     string private _name;
     // NFT単位
@@ -19,6 +21,8 @@ contract MusicNFT is ERC1155, Ownable {
     bool private _whenAllReleased = false;
     //販売状態
     bool private _nowOnSale = false;
+    //画像データ
+    string private _uri = "ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json";
     
     //@notice レアリティごとの供給量
     mapping(uint256 => uint256) private _supplyOfEach;
@@ -26,6 +30,8 @@ contract MusicNFT is ERC1155, Ownable {
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     //@notice WhiteList用
     mapping(address => bool) private _isAuthenticated;
+    //@notice 許可された代行者
+    mapping(address => bool) private _agent;
 
     constructor() ERC1155("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json") {
 
@@ -88,6 +94,61 @@ contract MusicNFT is ERC1155, Ownable {
         _AMOUNT_OF_MAX_MINT[19] = 5;
         // Remix for public sale
         _AMOUNT_OF_MAX_MINT[20] = 9;
+
+        creator = _msgSender();
+    }
+
+    event TransferSingle(
+        address indexed _operator,
+        address indexed _from,
+        address indexed _to,
+        uint256 _id,
+        uint256 _value
+    );
+
+    event TransferBatch(
+        address indexed _operator,
+        address indexed _from,
+        address indexed _to,
+        uint256[] _ids,
+        uint256[] _values
+    );
+
+    event URI(
+        string _value
+    );
+
+    event SoldForGiveaway(
+        address indexed _from,
+        address indexed _to,
+        uint256 _id,
+        uint256 _amount
+    )
+
+    event SoldForPresale(
+        address indexed _from,
+        address indexed _to,
+        uint256 _id,
+        uint256 _amount
+    )
+
+    event SoldForPublicSale(
+        address indexed _from,
+        address indexed _to,
+        uint256 _id,
+        uint256 _amount
+    )
+
+    event NowOnSale(
+        bool _onsale
+    )
+
+    /*
+    * @notice 執行者を認証する(コントラクトの作成者と許可された代行者のみ)
+    */
+    modifier onlyCreatorOrAgent(){
+        require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+        _;
     }
 
     /*
@@ -124,11 +185,13 @@ contract MusicNFT is ERC1155, Ownable {
     * @param _tokenId ミントするレアリティのID
     * @param _amount ミントする数
     */
-    function mint(uint256 _tokenId, uint256 _amount) public onlyOwner supplyCheck(_tokenId, _amount){
+    function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
 
         _mint(_msgSender(), _tokenId, _amount, "");
+
+        emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
     }
     
     /*
@@ -140,13 +203,15 @@ contract MusicNFT is ERC1155, Ownable {
     function mintBatch(
         uint256[] memory _tokenIds,
         uint256[] memory _amounts
-    ) public onlyOwner supplyCheckBatch(_tokenIds, _amounts){
+    ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
             totalSupply += _amounts[i];
         }
 
         _mintBatch(_msgSender(), _tokenIds, _amounts, "");
+
+        emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
     }
 
     /*
@@ -180,14 +245,17 @@ contract MusicNFT is ERC1155, Ownable {
                 *レアリティごとの販売制限の指定(ToDo)
                 */
                 if (ids[i] <= 5){
-                    operator == owner();
+                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent")
+                    emit SoldForGiveaway(from, to, ids[i], amounts[i])
                 }
                 else if (ids[i] <= 12) {
                     require(_isAuthenticated[_msgSender()], "This address is not authenticated");
                     require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPresale(from, to, ids[i], amounts[i])
 
                 } else {
                     require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPublicSale(from, to, ids[i], amounts[i])
                 }
             }
         }
@@ -197,7 +265,7 @@ contract MusicNFT is ERC1155, Ownable {
     * @title releasedLimitations
     * @notice 全ての購入制限の解除
     */
-    function releasedLimitations() public onlyOwner {
+    function releasedLimitations() public onlyCreatorOrAgent {
         _whenAllReleased = true;
     }
 
@@ -205,36 +273,58 @@ contract MusicNFT is ERC1155, Ownable {
     * @title releasedLimitations
     * @notice 販売開始
     */
-    function startSale() public onlyOwner {
+    function startSale() public onlyCreatorOrAgent {
         _nowOnSale = true;
+        emit NowOnSale(_nowOnSale)
     }
 
     /*
     * @title releasedLimitations
     * @notice 販売停止
     */
-    function suspendSale() public onlyOwner {
+    function suspendSale() public onlyCreatorOrAgent {
         _nowOnSale = false;
+        emit NowOnSale(_nowOnSale)
     }
 
     /*
     * @title reveal
     * @notice リビール用
     */
-    function reveal() public onlyOwner {
-        _setURI("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json");
+    function reveal() public onlyCreatorOrAgent {
+        _setURI(_uri);
+        emit URI(_uri);
     }
 
     /*
-    * @title reveal
+    * @title EMGreveal
     * @notice 緊急リビール用
     * @param _EMGuri 緊急用uri
     * @dev 画像データに対する信頼性の点から，要検討
     */
     function EMGreveal(
         string memory _EMGuri
-    ) public onlyOwner {
+    ) public onlyCreatorOrAgent {
         _setURI(_EMGuri);
+        emit URI(_EMGuri);
+    }
+
+    /*
+    * @title license
+    * @notice 代行者の許可
+    * @param agentAddr
+    */
+    function license(address agentAddr) public onlyCreatorOrAgent {
+        agent[agentAddr] = true;
+    }
+
+    /*
+    * @title license
+    * @notice 代行者の削除
+    * @param agentAddr
+    */
+    function unlicense(address agentAddr) public onlyCreatorOrAgent {
+        agent[agentAddr] = false;
     }
 
     /*
