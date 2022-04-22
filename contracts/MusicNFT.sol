@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "./AltONFT.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is ERC1155, Ownable {
+contract MusicNFT is AltONFT {
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -15,6 +15,9 @@ contract MusicNFT is ERC1155, Ownable {
     string private _name;
     // NFT単位
     string private _symbol;
+    // チェーンごとのIDの範囲
+    uint public minMintId;
+    uint public maxMintId;
     // 総供給量
     uint256 public totalSupply;
     //全ての購入制限の可否
@@ -33,8 +36,11 @@ contract MusicNFT is ERC1155, Ownable {
     //@notice 許可された代行者
     mapping(address => bool) private _agent;
 
-    constructor() ERC1155("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json") {
-
+    constructor(
+        address _lzEndpoint,
+        uint _minMintId,
+        uint _maxMintId
+    ) AltONFT(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
         // for presale
@@ -88,6 +94,9 @@ contract MusicNFT is ERC1155, Ownable {
         _AMOUNT_OF_MAX_MINT[19] = 5;
         // Remix
         _AMOUNT_OF_MAX_MINT[20] = 9;
+
+        minMintId = _minMintId;
+        maxMintId = _maxMintId;
 
         creator = _msgSender();
     }
@@ -164,6 +173,7 @@ contract MusicNFT is ERC1155, Ownable {
     * @param _amount ミントする数
     */
     function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
+        require(_tokenId >= minMintId && _tokenId <= maxMintId, "tokenId is not allowed on this chain");
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
 
@@ -183,6 +193,7 @@ contract MusicNFT is ERC1155, Ownable {
         uint256[] memory _amounts
     ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
+            require(_tokenIds[i] >= minMintId && _tokenIds[i] <= maxMintId, "tokenId is not allowed on this chain");
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
             totalSupply += _amounts[i];
         }
