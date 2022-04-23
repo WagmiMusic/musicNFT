@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/MusicNFT.sol": {
-      "lastModificationDate": 1650720028837,
-      "contentHash": "3d8707b0000c5969513bafc1328ab4a3",
+      "lastModificationDate": 1650729342878,
+      "contentHash": "2c6f5aedf7b976cc6b1eca6a4965cfd6",
       "sourceName": "contracts/MusicNFT.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -29,7 +29,7 @@
         }
       },
       "imports": [
-        "./AltONFT.sol",
+        "./ONFT1155.sol",
         "@openzeppelin/contracts/utils/math/SafeMath.sol",
         "@openzeppelin/contracts/access/Ownable.sol",
         "hardhat/console.sol"
@@ -441,44 +441,6 @@
       ],
       "artifacts": [
         "IERC165"
-      ]
-    },
-    "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/AltONFT.sol": {
-      "lastModificationDate": 1650646109739,
-      "contentHash": "c20d0a1600262d514601169e4c8ab9a3",
-      "sourceName": "contracts/AltONFT.sol",
-      "solcConfig": {
-        "version": "0.8.7",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "./lzApp/NonblockingLzApp.sol",
-        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "AltONFT"
       ]
     },
     "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/lzApp/NonblockingLzApp.sol": {
@@ -925,6 +887,80 @@
       ],
       "artifacts": [
         "LZEndpointMock"
+      ]
+    },
+    "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/ONFT1155.sol": {
+      "lastModificationDate": 1650729474179,
+      "contentHash": "6d8870919c7b783c689a206adff7ac43",
+      "sourceName": "contracts/ONFT1155.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./interfaces/IONFT1155.sol",
+        "./lzApp/NonblockingLzApp.sol",
+        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ONFT1155"
+      ]
+    },
+    "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/interfaces/IONFT1155.sol": {
+      "lastModificationDate": 1650729388998,
+      "contentHash": "1b173351d7fde0f9e3c46dafb030ef35",
+      "sourceName": "contracts/interfaces/IONFT1155.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IONFT1155"
       ]
     }
   }

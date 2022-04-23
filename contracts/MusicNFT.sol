@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./AltONFT.sol";
+import "./ONFT1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is AltONFT {
+contract MusicNFT is ONFT1155 {
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -40,7 +40,7 @@ contract MusicNFT is AltONFT {
         address _lzEndpoint,
         uint _minMintId,
         uint _maxMintId
-    ) AltONFT(_uri, _lzEndpoint){
+    ) ONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
         // for presale

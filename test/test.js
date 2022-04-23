@@ -153,6 +153,7 @@ describe("main", function () {
       chainIdDst,
       ethers.utils.solidityPack(["address"], [owner.address]),
       mintId,
+      mintAmount,
       owner.address,
       "0x0000000000000000000000000000000000000000",
       adapterParam
@@ -161,6 +162,6 @@ describe("main", function () {
     await expect(srcAmount).to.be.equal(0)
 
     const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
-    await expect(dstAmount).to.be.equal(1)
+    await expect(dstAmount).to.be.equal(mintAmount)
   })
 })
