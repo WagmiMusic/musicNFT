@@ -101,10 +101,6 @@ contract MusicNFT is AltONFT {
         creator = _msgSender();
     }
 
-    event URI(
-        string _value
-    );
-
     event SoldForGiveaway(
         address indexed _from,
         address indexed _to,
@@ -224,7 +220,7 @@ contract MusicNFT is AltONFT {
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        if (from == address(0) || from != owner()) { return; }
+        if (from == address(0) || to == address(0) || from != owner()) { return; }
 
         require(_nowOnSale, "Sale is suspended now");
 
@@ -332,7 +328,6 @@ contract MusicNFT is AltONFT {
     */
     function reveal() public onlyCreatorOrAgent {
         _setURI(_uri);
-        emit URI(_uri);
     }
 
     /*
@@ -345,7 +340,6 @@ contract MusicNFT is AltONFT {
         string memory _EMGuri
     ) public onlyCreatorOrAgent {
         _setURI(_EMGuri);
-        emit URI(_EMGuri);
     }
 
     /*
