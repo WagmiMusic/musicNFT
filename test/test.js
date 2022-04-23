@@ -41,19 +41,19 @@ describe("main", function () {
     beforeEach(async () => {
       await ONFTSrc.releasedLimitations()
     })
-    it("mint", async () => {
+    xit("mint", async () => {
       const mintId = 1
       const mintAmount = 1
       await ONFTSrc.mint(mintId, mintAmount)
       expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
     })
-    it("mintBatch", async () => {
+    xit("mintBatch", async () => {
       const mintIds = [1, 2]
       const mintAmounts = [1, 2]
       await ONFTSrc.mintBatch(mintIds, mintAmounts)
       expect(await ONFTSrc.balanceOf(owner.address, mintIds[0])).to.be.equal(mintAmounts[0])
     })
-    it("transfer", async () => {
+    xit("transfer", async () => {
       const mintId = 1
       const mintAmount = 1
       await ONFTSrc.mint(mintId, mintAmount)
@@ -61,7 +61,7 @@ describe("main", function () {
       await ONFTSrc.connect(alice).safeTransferFrom(alice.address, bob.address, mintId, mintAmount, 0x0)
       expect(await ONFTSrc.balanceOf(bob.address, mintId)).to.be.equal(mintAmount)
     })
-    it("transferBatch", async () => {
+    xit("transferBatch", async () => {
       const mintIds = [1, 2]
       const mintAmounts = [1, 2]
       const tx = await ONFTSrc.mintBatch(mintIds, mintAmounts)
@@ -72,20 +72,20 @@ describe("main", function () {
       await tx2.wait()
       expect(await ONFTSrc.balanceOf(bob.address, mintIds[0])).to.be.equal(mintAmounts[0])
     })
-    it("startSale and suspendSale", async () => {
+    xit("startSale and suspendSale", async () => {
       const mintId = 1
       const mintAmount = 1
       await ONFTSrc.mint(mintId, mintAmount)
       await ONFTSrc.suspendSale()
       await expect(ONFTSrc.safeTransferFrom(owner.address, alice.address, mintId, mintAmount, 0x0)).to.be.reverted;
     } )
-    it("reveal", async () => {
+    xit("reveal", async () => {
 
     })
-    it("EMGreveal", async () => {
+    xit("EMGreveal", async () => {
       
     })
-    it("license and unlicense", async () => {
+    xit("license and unlicense", async () => {
       const mintId = 1
       const mintAmount = 1
       await ONFTSrc.mint(mintId, mintAmount)
@@ -95,7 +95,7 @@ describe("main", function () {
     })
   })
 
-  it("Normal test - mint and transfer", async () => {
+  xit("Normal test - mint and transfer", async () => {
     const mintId = 18;
     const mintAmount = 1;
     const InvalidMintAmount = 10;
@@ -113,21 +113,28 @@ describe("main", function () {
 
   describe("Sale restriction", () => {
     it("Confirmation of giveaway/Raffle", async () => {
-      const mintId = 5;
-      const mintAmount = 1;
-      await ONFTDst.mint(mintId, mintAmount)
+      const mintId = 5 
+      const mintAmount = 2; //MaxMint:1
+      await expect(ONFTDst.mint(mintId, mintAmount)).to.be.reverted;
     })
   
     it("Confirmation of presale", async () => {
-      const mintId = 1;
-      const mintAmount = 1;
+      const mintId = 1; 
+      const mintAmount = 2; //MaxMint:3
       await ONFTSrc.mint(mintId, mintAmount)
+      await expect(ONFTSrc.mint(mintId, mintAmount)).to.be.revertedWith('Max supply reached');
+      await ONFTSrc.addAllowlist(alice.address)
+      await expect(ONFTSrc.safeTransferFrom(owner.address, alice.address, mintId, mintAmount, 0x0)).to.be.revertedWith("Can't buy same songs more than two record")
     })
   
     it("Confirmation of public sale", async () => {
-      const mintId = 3;
-      const mintAmount = 1;
-      await ONFTSrc.mint(mintId, mintAmount)
+      const mintId = 18;
+      const mintAmount = 5; //MaxMint:5
+      await ONFTDst.mint(mintId, mintAmount)
+      await ONFTDst.safeTransferFrom(owner.address, alice.address, mintId, 2, 0x0)
+      await ONFTDst.safeTransferFrom(owner.address, bob.address, mintId, 2, 0x0)
+      await ONFTDst.connect(bob).safeTransferFrom(bob.address, alice.address, mintId, 1, 0x0)
+      expect(await ONFTDst.balanceOf(alice.address, mintId)).to.be.equal(3)
     })
   })
 

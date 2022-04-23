@@ -237,7 +237,7 @@ contract MusicNFT is AltONFT {
                 */
                 if (ids[i] <= 2){
                     require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                     emit SoldForPublicSale(from, to, ids[i], amounts[i]);
                 }
                 /*
@@ -245,7 +245,7 @@ contract MusicNFT is AltONFT {
                 * @require 購入上限枚数
                 */
                 else if (ids[i] <= 4) {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                     emit SoldForPresale(from, to, ids[i], amounts[i]);
                 } 
                 /*
@@ -263,7 +263,7 @@ contract MusicNFT is AltONFT {
                 */
                 else if (ids[i] <= 11) {
                     require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                     emit SoldForPublicSale(from, to, ids[i], amounts[i]);
                 }
                 /*
@@ -273,7 +273,7 @@ contract MusicNFT is AltONFT {
                 */
                 else if (ids[i] <= 14) {
                     require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
                     emit SoldForPublicSale(from, to, ids[i], amounts[i]);
                 }
                 /*
@@ -281,7 +281,7 @@ contract MusicNFT is AltONFT {
                 * @require 購入上限枚数
                 */
                 else if (ids[i] <= 16) {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                     emit SoldForPresale(from, to, ids[i], amounts[i]);
                 } 
                 /*
@@ -289,11 +289,19 @@ contract MusicNFT is AltONFT {
                 * @require 購入上限枚数
                 */
                 else {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
                     emit SoldForPublicSale(from, to, ids[i], amounts[i]);  
                 }
             }
         }
+    }
+
+    /*
+    * @title addAllowlist
+    * @notice AllowListへの追加
+    */
+    function addAllowlist(address allowAddr) public onlyCreatorOrAgent {
+        _isAuthenticated[allowAddr] = true;
     }
 
     /*
