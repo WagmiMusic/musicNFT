@@ -3,7 +3,7 @@ const { expect } = require("chai")
 const { config } = require("dotenv")
 const { ethers } = require("hardhat")
 
-describe("main", function () {
+describe("main", () => {
   const chainIdSrc = 1
   const chainIdDst = 2
 
@@ -24,8 +24,8 @@ describe("main", function () {
     lzEndpointSrcMock = await LZEndpointMock.deploy(chainIdSrc)
     lzEndpointDstMock = await LZEndpointMock.deploy(chainIdDst)
 
-    ONFTSrc = await ONFT.deploy(lzEndpointSrcMock.address, ...ONFTSrcIds)
-    ONFTDst = await ONFT.deploy(lzEndpointDstMock.address, ...ONFTDstIds)
+    ONFTSrc = await ONFT.deploy(lzEndpointSrcMock.address, ...ONFTSrcIds, chainIdDst)
+    ONFTDst = await ONFT.deploy(lzEndpointDstMock.address, ...ONFTDstIds, chainIdSrc)
 
     lzEndpointSrcMock.setDestLzEndpoint(ONFTDst.address, lzEndpointDstMock.address)
     lzEndpointDstMock.setDestLzEndpoint(ONFTSrc.address, lzEndpointSrcMock.address)
@@ -138,30 +138,56 @@ describe("main", function () {
     })
   })
 
-  it("Omnichain test - mint on Src chian and send to Dst chain", async () => {
-    const mintId = 1;
-    const mintAmount = 1;
+  describe("Omunichain test", () => {
+    it("mint on Src chian and send to Dst chain", async () => {
+      const mintId = 1;
+      const mintAmount = 1;
+  
+      await ONFTSrc.mint(mintId,mintAmount)
+      expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
+  
+      // await ONFTSrc.releasedLimitations()
+  
+      const adapterParam = ethers.utils.solidityPack(["uint16", "uint256"], [1, 225000])
+  
+      await ONFTSrc.send(
+        chainIdDst,
+        ethers.utils.solidityPack(["address"], [owner.address]),
+        mintId,
+        mintAmount,
+        owner.address,
+        "0x0000000000000000000000000000000000000000",
+        adapterParam
+      )
+      const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
+      await expect(srcAmount).to.be.equal(0)
+  
+      const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
+      await expect(dstAmount).to.be.equal(mintAmount)
+    })
 
-    await ONFTSrc.mint(mintId,mintAmount)
-    expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
-
-    // await ONFTSrc.releasedLimitations()
-
-    const adapterParam = ethers.utils.solidityPack(["uint16", "uint256"], [1, 225000])
-
-    await ONFTSrc.send(
-      chainIdDst,
-      ethers.utils.solidityPack(["address"], [owner.address]),
-      mintId,
-      mintAmount,
-      owner.address,
-      "0x0000000000000000000000000000000000000000",
-      adapterParam
-    )
-    const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
-    await expect(srcAmount).to.be.equal(0)
-
-    const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
-    await expect(dstAmount).to.be.equal(mintAmount)
+    it("mint on Src chian and simpleSend to Dst chain", async () => {
+      const mintId = 1;
+      const mintAmount = 1;
+  
+      await ONFTSrc.mint(mintId,mintAmount)
+      expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
+  
+      // await ONFTSrc.releasedLimitations()
+  
+      const adapterParam = ethers.utils.solidityPack(["uint16", "uint256"], [1, 225000])
+  
+      await ONFTSrc.simpleSend(
+        mintId,
+        mintAmount,
+        owner.address,
+        adapterParam
+      )
+      const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
+      await expect(srcAmount).to.be.equal(0)
+  
+      const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
+      await expect(dstAmount).to.be.equal(mintAmount)
+    })
   })
 })

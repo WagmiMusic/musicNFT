@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/MusicNFT.sol": {
-      "lastModificationDate": 1650729342878,
-      "contentHash": "2c6f5aedf7b976cc6b1eca6a4965cfd6",
+      "lastModificationDate": 1650902798768,
+      "contentHash": "29c3a960e7ea907366b6ec45254251fc",
       "sourceName": "contracts/MusicNFT.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -30,6 +30,7 @@
       },
       "imports": [
         "./ONFT1155.sol",
+        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
         "@openzeppelin/contracts/utils/math/SafeMath.sol",
         "@openzeppelin/contracts/access/Ownable.sol",
         "hardhat/console.sol"
@@ -890,7 +891,7 @@
       ]
     },
     "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/ONFT1155.sol": {
-      "lastModificationDate": 1650729474179,
+      "lastModificationDate": 1650882625947,
       "contentHash": "6d8870919c7b783c689a206adff7ac43",
       "sourceName": "contracts/ONFT1155.sol",
       "solcConfig": {
@@ -929,7 +930,7 @@
       ]
     },
     "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/interfaces/IONFT1155.sol": {
-      "lastModificationDate": 1650729388998,
+      "lastModificationDate": 1650882579782,
       "contentHash": "1b173351d7fde0f9e3c46dafb030ef35",
       "sourceName": "contracts/interfaces/IONFT1155.sol",
       "solcConfig": {
@@ -961,6 +962,46 @@
       ],
       "artifacts": [
         "IONFT1155"
+      ]
+    },
+    "/Users/allegorywrite/music_smartcontract/musicNFT/contracts/Sumple.sol": {
+      "lastModificationDate": 1650903157176,
+      "contentHash": "a1c5cea96ec98584bcc863c933d61de5",
+      "sourceName": "contracts/Sumple.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
+        "@openzeppelin/contracts/utils/math/SafeMath.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SumpleNFT"
       ]
     }
   }

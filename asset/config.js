@@ -1,6 +1,5 @@
 const assetElement = [
-  {name:"riging to the top", description:"hogehoge"},
-  {name:"riging to the bottom", description:"hogehoge"}
+  {name:"riging to the top", description:"hogehoge"}
 ]
 
 const editionSize = assetElement.length
