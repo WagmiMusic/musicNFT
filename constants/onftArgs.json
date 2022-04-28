@@ -1,0 +1,14 @@
+{
+  "bsc-testnet": {
+    "startMintId": 1,
+    "endMintId": 1
+  },
+  "mumbai": {
+    "startMintId": 1,
+    "endMintId": 1
+  },
+  "rinkeby": {
+    "startMintId": 1,
+    "endMintId": 20
+  }
+}

@@ -1,12 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is ERC1155, Ownable {
+contract MusicNFT is ONFT1155 {
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -15,6 +16,11 @@ contract MusicNFT is ERC1155, Ownable {
     string private _name;
     // NFT単位
     string private _symbol;
+    // チェーンごとのIDの範囲
+    uint public minMintId;
+    uint public maxMintId;
+    // デフォルトのオムニセンド先チェーン
+    uint16 private defaultDstChainId;
     // 総供給量
     uint256 public totalSupply;
     //全ての購入制限の可否
@@ -33,28 +39,36 @@ contract MusicNFT is ERC1155, Ownable {
     //@notice 許可された代行者
     mapping(address => bool) private _agent;
 
-    constructor() ERC1155("ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json") {
-
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address _lzEndpoint,
+        uint _minMintId,
+        uint _maxMintId,
+        uint16 _defaultDstChainId
+    ) ONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
+
+        //fot giveaway/Raffle
+        // NTP Collab female
+        _AMOUNT_OF_MAX_MINT[1] = 1;
 
         // for presale
         // NTP Collab male
-        _AMOUNT_OF_MAX_MINT[1] = 3;
-        // NTP Collab female
         _AMOUNT_OF_MAX_MINT[2] = 3;
+        // NTP Collab female
+        _AMOUNT_OF_MAX_MINT[3] = 2;
 
         // for public sale
         // NTP Colab male
-        _AMOUNT_OF_MAX_MINT[3] = 2;
-        // NTP Colab male
         _AMOUNT_OF_MAX_MINT[4] = 2;
+        // NTP Colab female
+        _AMOUNT_OF_MAX_MINT[5] = 2;
 
 // Polygon(mumbai)
 
         // for giveaway/Raffle
-        // Cool Rulers Collab male
-        _AMOUNT_OF_MAX_MINT[5] = 1;
-        // Cool Rulers Collab female
+        // Cool Rulers Collab
         _AMOUNT_OF_MAX_MINT[6] = 1;
         // Normal
         _AMOUNT_OF_MAX_MINT[7] = 10;
@@ -64,37 +78,36 @@ contract MusicNFT is ERC1155, Ownable {
         _AMOUNT_OF_MAX_MINT[9] = 1;
 
         // for presale
-        // Cool Rulers Collab male
+        // Cool Rulers Collab
         _AMOUNT_OF_MAX_MINT[10] = 2;
-        // Cool Rulers Collab female
-        _AMOUNT_OF_MAX_MINT[11] = 2;
         // Normal
-        _AMOUNT_OF_MAX_MINT[12] = 20;
+        _AMOUNT_OF_MAX_MINT[11] = 20;
         // Acappella
-        _AMOUNT_OF_MAX_MINT[13] = 5;
+        _AMOUNT_OF_MAX_MINT[12] = 5;
         // Instrumantal
-        _AMOUNT_OF_MAX_MINT[14] = 5;
+        _AMOUNT_OF_MAX_MINT[13] = 5;
 
         // for public sale
-        // Cool Rulers Collab male
-        _AMOUNT_OF_MAX_MINT[15] = 2;
-        // Cool Rulers Collab female
-        _AMOUNT_OF_MAX_MINT[16] = 2;
+        // Cool Rulers Collab
+        _AMOUNT_OF_MAX_MINT[14] = 2;
         // Normal
-        _AMOUNT_OF_MAX_MINT[17] = 10;
+        _AMOUNT_OF_MAX_MINT[15] = 10;
         // Acappella
-        _AMOUNT_OF_MAX_MINT[18] = 5;
+        _AMOUNT_OF_MAX_MINT[16] = 5;
         // Instrumental
-        _AMOUNT_OF_MAX_MINT[19] = 5;
+        _AMOUNT_OF_MAX_MINT[17] = 5;
         // Remix
-        _AMOUNT_OF_MAX_MINT[20] = 9;
+        _AMOUNT_OF_MAX_MINT[18] = 9;
+
+        minMintId = _minMintId;
+        maxMintId = _maxMintId;
+
+        _name = name_;
+        _symbol = symbol_;
 
         creator = _msgSender();
+        defaultDstChainId = _defaultDstChainId;
     }
-
-    event URI(
-        string _value
-    );
 
     event SoldForGiveaway(
         address indexed _from,
@@ -164,6 +177,7 @@ contract MusicNFT is ERC1155, Ownable {
     * @param _amount ミントする数
     */
     function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
+        require(_tokenId >= minMintId && _tokenId <= maxMintId, "tokenId is not allowed on this chain");
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
 
@@ -183,6 +197,7 @@ contract MusicNFT is ERC1155, Ownable {
         uint256[] memory _amounts
     ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
+            require(_tokenIds[i] >= minMintId && _tokenIds[i] <= maxMintId, "tokenId is not allowed on this chain");
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
             totalSupply += _amounts[i];
         }
@@ -190,6 +205,19 @@ contract MusicNFT is ERC1155, Ownable {
         _mintBatch(_msgSender(), _tokenIds, _amounts, "");
 
         emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
+    }
+
+    /*
+    * @title simpleSend
+    * @notice 簡易的なオムニセンド（直コン用）
+    */
+    function simpleSend(
+        uint _tokenId,
+        uint _amount,
+        bytes calldata _toAddress,
+        bytes calldata _adapterParam
+    ) public payable {
+        _send(_msgSender(), defaultDstChainId, _toAddress, _tokenId, _amount, payable(_msgSender()), address(0x0), _adapterParam);
     }
 
     /*
@@ -213,7 +241,7 @@ contract MusicNFT is ERC1155, Ownable {
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        if (from == address(0) || from != owner()) { return; }
+        if (from == address(0) || to == address(0) || from != owner()) { return; }
 
         require(_nowOnSale, "Sale is suspended now");
 
@@ -223,23 +251,32 @@ contract MusicNFT is ERC1155, Ownable {
         */
         if(_nowOnSale && !_whenAllReleased){
             for (uint256 i = 0; i < ids.length; i++) {
+                } 
+                /*
+                * for giveaway/Raffle
+                * @require 執行者の限定
+                */
+                else if (ids[i] == 1) {
+                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+                    emit SoldForGiveaway(from, to, ids[i], amounts[i]);
+                }
                 /*
                 * for presale
                 * @require 購入上限枚数
                 * @require Allowlist判定
                 */
-                if (ids[i] <= 2){
+                if (ids[i] <= 3){
                     require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPresale(from, to, ids[i], amounts[i]);
                 }
                 /*
                 * for public sale
                 * @require 購入上限枚数
                 */
-                else if (ids[i] <= 4) {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPresale(from, to, ids[i], amounts[i]);
+                else if (ids[i] <= 5) {
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
                 } 
                 /*
                 * for giveaway/Raffle
@@ -247,6 +284,16 @@ contract MusicNFT is ERC1155, Ownable {
                 */
                 else if (ids[i] <= 9) {
                     require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+                    emit SoldForGiveaway(from, to, ids[i], amounts[i]);
+                }
+                /*
+                * for presale
+                * @require 購入上限枚数
+                * @require Allowlist判定
+                */
+                else if (ids[i] <= 10) {
+                    require(_isAuthenticated[to], "This address is not authenticated");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                     emit SoldForPresale(from, to, ids[i], amounts[i]);
                 }
                 /*
@@ -254,39 +301,37 @@ contract MusicNFT is ERC1155, Ownable {
                 * @require 購入上限枚数
                 * @require Allowlist判定
                 */
-                else if (ids[i] <= 11) {
+                else if (ids[i] <= 13) {
                     require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                }
-                /*
-                * for presale
-                * @require 購入上限枚数
-                * @require Allowlist判定
-                */
-                else if (ids[i] <= 14) {
-                    require(_isAuthenticated[to], "This address is not authenticated");
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    emit SoldForPresale(from, to, ids[i], amounts[i]);
                 }
                 /*
                 * for public sale
                 * @require 購入上限枚数
                 */
-                else if (ids[i] <= 16) {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPresale(from, to, ids[i], amounts[i]);
+                else if (ids[i] <= 14) {
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
                 } 
                 /*
                 * for public sale
                 * @require 購入上限枚数
                 */
                 else {
-                    require(balanceOf(_msgSender(), ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
                     emit SoldForPublicSale(from, to, ids[i], amounts[i]);  
                 }
             }
         }
+    }
+
+    /*
+    * @title addAllowlist
+    * @notice AllowListへの追加
+    */
+    function addAllowlist(address allowAddr) public onlyCreatorOrAgent {
+        _isAuthenticated[allowAddr] = true;
     }
 
     /*
@@ -321,7 +366,6 @@ contract MusicNFT is ERC1155, Ownable {
     */
     function reveal() public onlyCreatorOrAgent {
         _setURI(_uri);
-        emit URI(_uri);
     }
 
     /*
@@ -334,7 +378,6 @@ contract MusicNFT is ERC1155, Ownable {
         string memory _EMGuri
     ) public onlyCreatorOrAgent {
         _setURI(_EMGuri);
-        emit URI(_EMGuri);
     }
 
     /*

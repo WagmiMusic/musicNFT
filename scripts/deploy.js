@@ -1,15 +1,25 @@
-const hre = require("hardhat");
+const LZ_ENDPOINTS = require("../constants/layerzeroEndpoints.json")
+const ONFT_ARGS = require("../constants/onftArgs.json")
+const CHAIN_IDS = require("../constants/chainIds.json")
 
-const myAddr = "0xc4a67e2e63EfEC18679C00a96d72D1690EF14D39";
-const toAddr = "0x16ea840cfA174FdAC738905C4E5dB59Fd86912a1";
+const lzEndpointAddress = LZ_ENDPOINTS["rinkeby"]
+const onftArgs = ONFT_ARGS["rinkeby"]
+const chainIds = CHAIN_IDS["mumbai"]
 
 async function main() {
   const factory = await hre.ethers.getContractFactory("MusicNFT");
-  const contract = await factory.deploy();
+  const contract = await factory.deploy(
+    "hibikilla",
+    "record",
+    lzEndpointAddress, 
+    onftArgs.startMintId, 
+    onftArgs.endMintId, 
+    chainIds
+    );
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);
-  // const tx = await contract.safeTransferFrom(myAddr, toAddr, 1, 1, "0x");
-  // await tx.wait();
+  tx = await contract.mint(1,1);
+  await tx.wait()
 }
 
 main()

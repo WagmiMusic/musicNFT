@@ -59,12 +59,30 @@ const uploadImage = async () => {
 
   for (let i = 1; i < editionSize + 1; i++) {
     let id = i.toString();
+    let image_base64, music_base64, ifiletype, mfiletype;
     
     // データをIPFSにアップロード
-    let image_base64 = await btoa(fs.readFileSync(`./asset/${id}/image.png`));
-    let music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.wav`));
-    let image_file = new Moralis.File("image.png", { base64: `data:image/png;base64,${image_base64}` });
-    let music_file = new Moralis.File("music.wav", { base64: `data:audio/wav;base64,${music_base64}` });
+    if(fs.existsSync(`./asset/${id}/image.jpg`)){
+      image_base64 = await btoa(fs.readFileSync(`./asset/${id}/image.jpg`));
+      ifiletype = "jpg";
+    } else if(fs.existsSync(`./asset/${id}/animation.gif`)) {
+      image_base64 = await btoa(fs.readFileSync(`./asset/${id}/animation.gif`, (err,data) => {
+        console.log(err)
+      }));
+      ifiletype = "gif";
+    }
+    if(fs.existsSync(`./asset/${id}/music.wav`)){
+      music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.wav`));
+      mfiletype = "wav";
+    } else if(fs.existsSync(`./asset/${id}/music.mp3`)) {
+      music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.mp3`, (err,data) => {
+        console.log(err)
+      }));
+      mfiletype = "mp3";
+    }
+
+    let image_file = new Moralis.File("image", { base64: `data:image/${ifiletype};base64,${image_base64}` });
+    let music_file = new Moralis.File("music", { base64: `data:audio/${mfiletype};base64,${music_base64}` });
     await image_file.saveIPFS({ useMasterKey: true });
     await music_file.saveIPFS({ useMasterKey: true });
     console.log("IPFS address of Image: ", image_file.ipfs());

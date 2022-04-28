@@ -1,5 +1,5 @@
 const { privateKey, alchemyApiKey } = require("./secrets.json");
-
+require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
 
@@ -31,4 +31,7 @@ module.exports = {
       accounts: [ privateKey ]
     }
   },
+  etherscan: {
+    apiKey: "UUT8BA1URMCD5JPPN4YFJ8UYGYHQZ2FFBH"
+  }
 };
