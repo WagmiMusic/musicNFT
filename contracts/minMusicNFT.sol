@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ONFT1155.sol";
+import "./minONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is ONFT1155 {
+contract minMusicNFT is minONFT1155 {
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -21,8 +21,6 @@ contract MusicNFT is ONFT1155 {
     uint public maxMintId;
     // デフォルトのオムニセンド先チェーン
     uint16 private defaultDstChainId;
-    // 総供給量
-    uint256 public totalSupply;
     // 全ての購入制限の可否
     bool private _whenAllReleased = false;
     // 販売状態
@@ -48,7 +46,7 @@ contract MusicNFT is ONFT1155 {
         uint _minMintId,
         uint _maxMintId,
         uint16 _defaultDstChainId
-    ) ONFT1155(_uri, _lzEndpoint){
+    ) minONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
         //fot giveaway/Raffle
@@ -66,40 +64,6 @@ contract MusicNFT is ONFT1155 {
         _AMOUNT_OF_MAX_MINT[4] = 2;
         // NTP Colab female
         _AMOUNT_OF_MAX_MINT[5] = 2;
-
-// Polygon(mumbai)
-
-        // for giveaway/Raffle
-        // Cool Rulers Collab
-        _AMOUNT_OF_MAX_MINT[6] = 1;
-        // Normal
-        _AMOUNT_OF_MAX_MINT[7] = 10;
-        // Normal
-        _AMOUNT_OF_MAX_MINT[8] = 10;
-        // Remix
-        _AMOUNT_OF_MAX_MINT[9] = 1;
-
-        // for presale
-        // Cool Rulers Collab
-        _AMOUNT_OF_MAX_MINT[10] = 2;
-        // Normal
-        _AMOUNT_OF_MAX_MINT[11] = 20;
-        // Acappella
-        _AMOUNT_OF_MAX_MINT[12] = 5;
-        // Instrumantal
-        _AMOUNT_OF_MAX_MINT[13] = 5;
-
-        // for public sale
-        // Cool Rulers Collab
-        _AMOUNT_OF_MAX_MINT[14] = 2;
-        // Normal
-        _AMOUNT_OF_MAX_MINT[15] = 10;
-        // Acappella
-        _AMOUNT_OF_MAX_MINT[16] = 5;
-        // Instrumental
-        _AMOUNT_OF_MAX_MINT[17] = 5;
-        // Remix
-        _AMOUNT_OF_MAX_MINT[18] = 9;
 
         minMintId = _minMintId;
         maxMintId = _maxMintId;
@@ -153,6 +117,7 @@ contract MusicNFT is ONFT1155 {
         uint256 _tokenId,
         uint256 _amount
     ){
+        require(_tokenId >= minMintId && _tokenId <= maxMintId, "tokenId is not allowed on this chain");
         require(_supplyOfEach[_tokenId] + _amount <= _AMOUNT_OF_MAX_MINT[_tokenId], "Max supply reached");
         _;
     }
@@ -167,6 +132,7 @@ contract MusicNFT is ONFT1155 {
         uint256[] memory _amounts
     ){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
+            require(_tokenIds[i] >= minMintId && _tokenIds[i] <= maxMintId, "tokenId is not allowed on this chain");
             require(_supplyOfEach[_tokenIds[i]] + _amounts[i] <= _AMOUNT_OF_MAX_MINT[_tokenIds[i]], "Max supply reached");
         }
         _;
@@ -179,10 +145,7 @@ contract MusicNFT is ONFT1155 {
     * @param _amount ミントする数
     */
     function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
-        require(_tokenId >= minMintId && _tokenId <= maxMintId, "tokenId is not allowed on this chain");
         _supplyOfEach[_tokenId] += _amount;
-        totalSupply += _amount;
-
         _mint(_msgSender(), _tokenId, _amount, "");
 
         emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
@@ -199,9 +162,7 @@ contract MusicNFT is ONFT1155 {
         uint256[] memory _amounts
     ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
-            require(_tokenIds[i] >= minMintId && _tokenIds[i] <= maxMintId, "tokenId is not allowed on this chain");
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
-            totalSupply += _amounts[i];
         }
 
         _mintBatch(_msgSender(), _tokenIds, _amounts, "");
@@ -243,7 +204,7 @@ contract MusicNFT is ONFT1155 {
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        if (from == address(0) || to == address(0) || from != owner()) { return; }
+        if (from == address(0) || to == address(0) || from != creator) { return; }
 
         require(_nowOnSale, "Sale is suspended now");
 
@@ -279,62 +240,10 @@ contract MusicNFT is ONFT1155 {
                 * for public sale
                 * @require 購入上限枚数
                 */
-                else if (ids[i] <= 5) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                } 
-                /*
-                * for giveaway/Raffle
-                * @require 執行者の限定
-                */
-                else if (ids[i] <= 9) {
-                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
-                    emit SoldForGiveaway(from, to, ids[i], amounts[i]);
-                }
-                /*
-                * for presale
-                * @require 購入上限枚数
-                * @require Allowlist判定
-                */
-                else if (ids[i] <= 10) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    if(_nowOnPresale){
-                        require(_isAuthenticated[to], "This address is not authenticated");
-                        emit SoldForPresale(from, to, ids[i], amounts[i]);
-                    } else {
-                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                    }
-                }
-                /*
-                * for presale
-                * @require 購入上限枚数
-                * @require Allowlist判定
-                */
-                else if (ids[i] <= 13) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    if(_nowOnPresale){
-                        require(_isAuthenticated[to], "This address is not authenticated");
-                        emit SoldForPresale(from, to, ids[i], amounts[i]);
-                    } else {
-                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                    }
-                }
-                /*
-                * for public sale
-                * @require 購入上限枚数
-                */
-                else if (ids[i] <= 14) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                } 
-                /*
-                * for public sale
-                * @require 購入上限枚数
-                */
                 else {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);  
-                }
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                } 
             }
         }
     }

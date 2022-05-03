@@ -2,6 +2,8 @@ const { privateKey, alchemyApiKey } = require("./secrets.json");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
+require("hardhat-gas-reporter");
+require('hardhat-contract-sizer');
 
 module.exports = {
   solidity: {
@@ -13,11 +15,26 @@ module.exports = {
       }
     }
   },
+  gasReporter: {
+    currency: 'JPY',
+    coinmarketcap: 'e9a2f0b2-8e69-4298-8d70-89b9a0064144',
+    token: 'ETH',
+    gasPrice: 40
+  },
+  contractSizer: {
+    alphaSort: false,
+    runOnCompile: true,
+    disambiguatePaths: false,
+  },
   networks: {
     hardhat: {},
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/" + alchemyApiKey,
       chainId: 4,
+      accounts: [ privateKey ]
+    },
+    goerli: {
+      url: "https://eth-goerli.alchemyapi.io/v2/" + alchemyApiKey,
       accounts: [ privateKey ]
     },
     matic_mainnet: {

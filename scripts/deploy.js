@@ -8,16 +8,27 @@ const chainIds = CHAIN_IDS["mumbai"]
 
 async function main() {
   const factory = await hre.ethers.getContractFactory("MusicNFT");
+  const option = {
+    gasPrice: 5 * 10**9
+  }
   const contract = await factory.deploy(
     "hibikilla",
     "record",
     lzEndpointAddress, 
     onftArgs.startMintId, 
     onftArgs.endMintId, 
-    chainIds
+    chainIds,
+    option
     );
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);
+  const gasPrice = contract.deployTransaction.gasPrice;
+  const gasLimit = contract.deployTransaction.gasLimit;
+
+  console.log("GasPrice(gwei):", gasPrice / 10**9);
+  console.log("GasLimit:", gasLimit);
+  console.log("GasFee:", ethers.utils.formatEther(gasPrice) * gasLimit)
+
   tx = await contract.mint(1,1);
   await tx.wait()
 }
