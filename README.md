@@ -1,4 +1,4 @@
-### musicNFT
+# musicNFT
 
 ## Fulfill mandatory values
 * .env
@@ -19,8 +19,8 @@ MATIC_CONTRACT_ADDRESS= "" //fulfill later
     "alchemyApiKey": "YOUR_ALCHEMY_API_KEY"
 }
 ```
-## deploy
-# for Ethereum
+# deploy
+### for Ethereum
 rinkebyにデプロイ  
 本番環境: rinkeby => ethereum
 ```
@@ -44,7 +44,7 @@ ETH_CONTRACT_ADDRESS= "ETH_CONTRACT_ADDRESS"
 ```
 npx hardhat run --network rinkeby scripts/mint/mint_eth.js
 ```
-# for Polygon(matic)
+### for Polygon(matic)
 mumbai(matic_testnet)にデプロイ  
 本番環境: mumbai => matic_mainnet
 ```
@@ -68,15 +68,15 @@ MATIC_CONTRACT_ADDRESS= "MATIC_ONTRACT_ADDRESS"
 ```
 npx hardhat run --network rinkeby scripts/mint/mint_matic.js
 ```
-## Verify contract code
-# for etherscan
+# Verify contract code
+## for etherscan
 etherscanにコントラクトを登録し，UIで実行できるようにします  
 本番環境: rinkeby => ethereum
           0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA => ...
 ```
 npx hardhat verify --network rinkeby ETH_CONTRACT_ADDRESS "WAGMI Music" "disc" "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA" "1" "5"
 ```
-# for polygonscan
+## for polygonscan
 etherscanにコントラクトを登録し，UIで実行できるようにします  
 hardhat.config.jsを書き換え
 ```js
@@ -90,34 +90,34 @@ apiKey: polygonscanApiKey // コメントイン
 ```
 npx hardhat verify --network mumbai MATIC_CONTRACT_ADDRESS "WAGMI Music" "disc" "0xf69186dfBa60DdB133E91E9A4B5673624293d8F8" "6" "18"
 ```
-## option: Generate metadata
+# option: Generate metadata
 ```
 node scripts/generate_metadata.js
 ```
-### option: OmniChain
+# option: OmniChain
 ## setTrustedRemote
-# for Ethereum
+### for Ethereum
 本番環境: rinkeby => ethereum
 ```
 npx hardhat run --network rinkeby scripts/setTrustedRemote/str_eth.js
 ```
-# for Polygon
+### for Polygon
 本番環境: mumbai => matic_mainnet
 ```
 npx hardhat run --network mumbai scripts/setTrustedRemote/str_matic.js
 ```
-## send Omnichain NFT
-# Ethereum to Polygon
+# send Omnichain NFT
+### Ethereum to Polygon
 ```
 npx hardhat run --network rinkeby scripts/omniSend/send_eth.js
 ```
-# Polygon to Ethereum
+### Polygon to Ethereum
 ```
 npx hardhat run --network mumbai scripts/omniSend/send_matic.js
 ```
-# start sale
+### start sale
 Etherscan,PolygonscanのUIで実行
-# finish presale
+### finish presale
 Etherscan,PolygonscanのUIで実行
-# option: reveal or suspend sale for emergency
+### option: reveal or suspend sale for emergency
 Etherscan,PolygonscanのUIで実行
