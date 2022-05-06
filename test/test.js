@@ -177,7 +177,7 @@ describe("main", () => {
       )
       const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
       await expect(srcAmount).to.be.equal(0)
-  
+
       const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
       await expect(dstAmount).to.be.equal(mintAmount)
     })

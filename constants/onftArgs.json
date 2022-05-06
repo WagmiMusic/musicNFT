@@ -5,7 +5,7 @@
   },
   "mumbai": {
     "startMintId": 1,
-    "endMintId": 1
+    "endMintId": 20
   },
   "rinkeby": {
     "startMintId": 1,

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ONFT1155.sol";
+import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -19,8 +19,8 @@ contract MusicNFT is ONFT1155 {
     // チェーンごとのIDの範囲
     uint public minMintId;
     uint public maxMintId;
-    // デフォルトのオムニセンド先チェーン
-    uint16 private defaultDstChainId;
+    // // デフォルトのオムニセンド先チェーン
+    // uint16 private defaultDstChainId;
     // 総供給量
     uint256 public totalSupply;
     // 全ての購入制限の可否
@@ -46,8 +46,7 @@ contract MusicNFT is ONFT1155 {
         string memory symbol_,
         address _lzEndpoint,
         uint _minMintId,
-        uint _maxMintId,
-        uint16 _defaultDstChainId
+        uint _maxMintId
     ) ONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
@@ -108,7 +107,6 @@ contract MusicNFT is ONFT1155 {
         _symbol = symbol_;
 
         creator = _msgSender();
-        defaultDstChainId = _defaultDstChainId;
     }
 
     event SoldForGiveaway(
@@ -207,19 +205,6 @@ contract MusicNFT is ONFT1155 {
         _mintBatch(_msgSender(), _tokenIds, _amounts, "");
 
         emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
-    }
-
-    /*
-    * @title simpleSend
-    * @notice 簡易的なオムニセンド（直コン用）
-    */
-    function simpleSend(
-        uint _tokenId,
-        uint _amount,
-        bytes calldata _toAddress,
-        bytes calldata _adapterParam
-    ) public payable {
-        _send(_msgSender(), defaultDstChainId, _toAddress, _tokenId, _amount, payable(_msgSender()), address(0x0), _adapterParam);
     }
 
     /*
