@@ -16,7 +16,9 @@ MATIC_CONTRACT_ADDRESS= "" //fulfill later
 ```json
 {
     "privateKey": "YOUR_WALLET_PRIVATE_KEY",
-    "alchemyApiKey": "YOUR_ALCHEMY_API_KEY"
+    "alchemyApiKey": "YOUR_ALCHEMY_API_KEY",
+    "polygonscanApiKey": "YOUR_MATIC_API_KEY",
+    "etherscanApiKey": "YOUR_ETH_API_KEY",
 }
 ```
 # deploy
