@@ -10,7 +10,7 @@ const lzEndpointAddress = LZ_ENDPOINTS[hre.network.name]
 const onftArgs = ONFT_ARGS[hre.network.name]
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("UniversalONFT721");
+  const factory = await hre.ethers.getContractFactory("MusicNFT");
   // const option = {
   //   gasPrice: 150 * 10**9
   // }
@@ -30,9 +30,6 @@ async function main() {
   console.log("GasPrice(gwei):", gasPrice / 10**9);
   console.log("GasLimit:", gasLimit);
   console.log("GasFee:", ethers.utils.formatEther(gasPrice) * gasLimit)
-
-  tx = await contract.mint();
-  await tx.wait()
 }
 
 main()

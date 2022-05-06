@@ -30,7 +30,7 @@ contract MusicNFT is ONFT1155 {
     // プレセール状態
     bool private _nowOnPresale = false;
     // 画像データ
-    string private _uri = "ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json";
+    string private _uri = "ipfs://QmQNCP7fgcreW2QMf3oGrUJqRn3vNxA36AKa93sV7QuYQB/metadata/{id}.json";
     
     //@notice レアリティごとの供給量
     mapping(uint256 => uint256) private _supplyOfEach;

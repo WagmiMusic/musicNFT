@@ -48,7 +48,7 @@ npx hardhat run --network rinkeby scripts/mint/mint_eth.js
 mumbai(matic_testnet)にデプロイ  
 本番環境: mumbai => matic_mainnet
 ```
-npx hardhat run --network matic_testnet scripts/deploy.js
+npx hardhat run --network mumbai scripts/deploy.js
 ```
 以下の値が表示されるので  
 MATIC_CONTRACT_ADDRESSを保存しておく
@@ -66,7 +66,7 @@ MATIC_CONTRACT_ADDRESS= "MATIC_ONTRACT_ADDRESS"
 全てのNFTを一括ミントします  
 本番環境: mumbai => matic_mainnet
 ```
-npx hardhat run --network rinkeby scripts/mint/mint_matic.js
+npx hardhat run --network mumbai scripts/mint/mint_matic.js
 ```
 # Verify contract code
 ## for etherscan
