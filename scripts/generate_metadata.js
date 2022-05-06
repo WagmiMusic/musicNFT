@@ -88,6 +88,7 @@ const uploadImage = async () => {
     let music_file = new Moralis.File("music", { base64: `data:audio/${mfiletype};base64,${music_base64}` });
     await image_file.saveIPFS({ useMasterKey: true });
     await music_file.saveIPFS({ useMasterKey: true });
+    console.log(`Processing ${i}/${editionSize}...`)
     console.log("IPFS address of Image: ", image_file.ipfs());
     console.log("IPFS address of Music: ", music_file.ipfs());
 

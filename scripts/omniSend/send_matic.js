@@ -6,24 +6,34 @@ dotenv.config(); // setup dotenv
 const { ethers } = require("hardhat");
 // srcContract is on mumbai
 let srcChainId = 10009;
-let srcAddr = process.env.MATIC_CONTRACT_ADDRESS;;
-// srcContract is on rinkeby
+let srcAddr = process.env.MATIC_CONTRACT_ADDRESS;
+// dstContract is on rinkeby
 let dstChainId = 10001;
-let dstAddr = process.env.ETH_CONTRACT_ADDRESS;;
+let dstAddr = process.env.ETH_CONTRACT_ADDRESS;
+
 let adapterParams = ethers.utils.solidityPack(["uint16", "uint256"], [1, 200000]) // default adapterParams example
+let tokenId = 1;
+let amount = 1;
 
 async function main() {
-  const contractFactory = await ethers.getContractFactory("minMusicNFT");
+  const signers = await ethers.getSigners()
+  const owner = signers[0]
+  const contractFactory = await ethers.getContractFactory("MusicNFT");
   const contract = await contractFactory.attach(srcAddr);
-  let tx = await contract.simpleSend(
-    1,
-    1,
-    "0x16ea840cfA174FdAC738905C4E5dB59Fd86912a1",
-    adapterParams,
-    { value: ethers.utils.parseEther("0.5") }
+  let tx = await contract.sendFrom(
+    owner.address, 
+    dstChainId, 
+    owner.address, 
+    tokenId, 
+    amount, 
+    owner.address, 
+    ethers.constants.AddressZero, 
+    adapterParams, 
+    {  value: ethers.utils.parseEther("0.4") }
   )
   await tx.wait()
-  console.log(`✅ [${hre.network.name}] omniSend(${dstChainId}, ${dstAddr})`)
+  console.log(`✅ [${hre.network.name}] send(${dstChainId}, ${tokenId}, ${amount})`)
+  console.log(` tx: ${tx}`)
 }
 main()
   .then(() => process.exit(0))

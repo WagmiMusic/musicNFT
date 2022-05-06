@@ -16,15 +16,17 @@ MATIC_CONTRACT_ADDRESS= "" //fulfill later
 ```json
 {
     "privateKey": "YOUR_WALLET_PRIVATE_KEY",
-    "alchemyApiKey": "YOUR_ALCHEMY_API_KEY"
+    "alchemyApiKey": "YOUR_ALCHEMY_API_KEY",
+    "polygonscanApiKey": "YOUR_MATIC_API_KEY",
+    "etherscanApiKey": "YOUR_ETH_API_KEY",
 }
 ```
 # deploy
 ### for Ethereum
-rinkebyにデプロイ  
+minMusicNFTをrinkebyにデプロイ  
 本番環境: rinkeby => ethereum
 ```
-npx hardhat run --network rinkeby scripts/deploy.js
+npx hardhat run --network rinkeby scripts/deploy/deploy_eth.js
 ```
 以下の値が表示されるので  
 ETH_CONTRACT_ADDRESSを保存しておく
@@ -34,7 +36,7 @@ GasPrice(gwei): GAS_PRICE
 GasLimit: GAS_LIMIT
 GasFee: GAS_FEE
 ```
-* Fulfill mandatory values
+### Fulfill mandatory values
 * .env
 ```
 ETH_CONTRACT_ADDRESS= "ETH_CONTRACT_ADDRESS"
@@ -45,10 +47,10 @@ ETH_CONTRACT_ADDRESS= "ETH_CONTRACT_ADDRESS"
 npx hardhat run --network rinkeby scripts/mint/mint_eth.js
 ```
 ### for Polygon(matic)
-mumbai(matic_testnet)にデプロイ  
-本番環境: mumbai => matic_mainnet
+MusicNFTをmumbai(matic_testnet)にデプロイ  
+本番環境: mumbai => polygon
 ```
-npx hardhat run --network matic_testnet scripts/deploy.js
+npx hardhat run --network mumbai scripts/deploy/deploy_matic.js
 ```
 以下の値が表示されるので  
 MATIC_CONTRACT_ADDRESSを保存しておく
@@ -64,15 +66,15 @@ GasFee: GAS_FEE
 MATIC_CONTRACT_ADDRESS= "MATIC_ONTRACT_ADDRESS"
 ```
 全てのNFTを一括ミントします  
-本番環境: mumbai => matic_mainnet
+本番環境: mumbai => polygon
 ```
-npx hardhat run --network rinkeby scripts/mint/mint_matic.js
+npx hardhat run --network mumbai scripts/mint/mint_matic.js
 ```
 # Verify contract code
 ## for etherscan
 etherscanにコントラクトを登録し，UIで実行できるようにします  
 本番環境: rinkeby => ethereum
-          0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA => ...
+          0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA => 0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675
 ```
 npx hardhat verify --network rinkeby ETH_CONTRACT_ADDRESS "WAGMI Music" "disc" "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA" "1" "5"
 ```
@@ -85,12 +87,13 @@ etherscan: {
 apiKey: polygonscanApiKey // コメントイン
 }
 ```
-本番環境: mumbai => matic_mainnet  
-        0xf69186dfBa60DdB133E91E9A4B5673624293d8F8 => ...
+本番環境: mumbai => polygon 
+        0xf69186dfBa60DdB133E91E9A4B5673624293d8F8 => 0x3c2269811836af69497E5F486A85D7316753cf62
 ```
 npx hardhat verify --network mumbai MATIC_CONTRACT_ADDRESS "WAGMI Music" "disc" "0xf69186dfBa60DdB133E91E9A4B5673624293d8F8" "6" "18"
 ```
 # option: Generate metadata
+メタデータを生成，IPFSにアップロードし，URIを取得します
 ```
 node scripts/generate_metadata.js
 ```
@@ -102,16 +105,26 @@ node scripts/generate_metadata.js
 npx hardhat run --network rinkeby scripts/setTrustedRemote/str_eth.js
 ```
 ### for Polygon
-本番環境: mumbai => matic_mainnet
+本番環境: mumbai => polygon
 ```
 npx hardhat run --network mumbai scripts/setTrustedRemote/str_matic.js
 ```
 # send Omnichain NFT
 ### Ethereum to Polygon
+転送するトークン情報を書き込む
+```js
+let tokenId = TOKEN_ID;
+let amount = TOKEN_AMOUNT;
+```
 ```
 npx hardhat run --network rinkeby scripts/omniSend/send_eth.js
 ```
 ### Polygon to Ethereum
+転送するトークン情報を書き込む
+```js
+let tokenId = TOKEN_ID;
+let amount = TOKEN_AMOUNT;
+```
 ```
 npx hardhat run --network mumbai scripts/omniSend/send_matic.js
 ```
