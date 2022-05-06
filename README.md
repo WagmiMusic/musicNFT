@@ -1,6 +1,6 @@
 # musicNFT
 
-## Fulfill mandatory values
+### Fulfill mandatory values
 * .env
 ```
 NODE_ENV=dev
@@ -58,7 +58,7 @@ GasPrice(gwei): GAS_PRICE
 GasLimit: GAS_LIMIT
 GasFee: GAS_FEE
 ```
-* Fulfill mandatory values
+### Fulfill mandatory values
 * .env
 ```
 MATIC_CONTRACT_ADDRESS= "MATIC_ONTRACT_ADDRESS"
@@ -115,9 +115,9 @@ npx hardhat run --network rinkeby scripts/omniSend/send_eth.js
 ```
 npx hardhat run --network mumbai scripts/omniSend/send_matic.js
 ```
-### start sale
+## start sale
 Etherscan,PolygonscanのUIで実行
-### finish presale
+## finish presale
 Etherscan,PolygonscanのUIで実行
-### option: reveal or suspend sale for emergency
+## option: reveal or suspend sale for emergency
 Etherscan,PolygonscanのUIで実行
