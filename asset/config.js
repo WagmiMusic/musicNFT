@@ -30,109 +30,109 @@ const attributes = {
 const assetElement = [
   {
     // 1
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.NTPCollabFemale
   },
   {
     // 2
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.NTPCollabMale
   },
   {
     // 3
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.NTPCollabFemale
   },
   {
     // 4
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.NTPCollabMale
   },
   {
     // 5
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.NTPCollabFemale
   },
   {
     // 6
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.CoolRulersCollabAnimation
   },
   {
     // 7
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 8
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 9
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Remix)", 
     description:share.description, 
     attributes: attributes.Remix
   },
   {
     // 10
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.CoolRulersCollabAnimation
   },
   {
     // 11
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 12
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Acappella)", 
     description:share.description, 
     attributes: attributes.Acappella
   },
   {
     // 13
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Instrumental)", 
     description:share.description, 
     attributes: attributes.Instrumental
   },
   {
     // 14
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.CoolRulersCollabAnimation
   },
   {
     // 15
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 16
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Acappella)", 
     description:share.description, 
     attributes: attributes.Acappella
   },
   {
     // 17
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Instrumental)", 
     description:share.description, 
     attributes: attributes.Instrumental
   },
   {
     // 18
-    name:"Rising to the top", 
+    name:"Risin' To The Top feat. Laya (Remix)", 
     description:share.description, 
     attributes: attributes.Remix
   }
