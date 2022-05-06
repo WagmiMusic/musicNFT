@@ -7,7 +7,7 @@ describe("main", () => {
   const chainIdSrc = 1
   const chainIdDst = 2
 
-  let owner, alice, bob, lzEndpointSrcMock, lzEndpointDstMock, ONFTSrc, ONFTDst, LZEndpointMock, ONFT, ONFTSrcIds, ONFTDstIds
+  let owner, alice, bob, lzEndpointSrcMock, lzEndpointDstMock, ONFTSrc, ONFTDst, LZEndpointMock, ETHONFT, PGONFT, ONFTSrcIds, ONFTDstIds
 
   before(async () => {
     owner = (await ethers.getSigners())[0]
@@ -15,7 +15,8 @@ describe("main", () => {
     bob = (await ethers.getSigners())[2]
 
     LZEndpointMock = await ethers.getContractFactory("LZEndpointMock")
-    ONFT = await ethers.getContractFactory("MusicNFT")
+    ETHONFT = await ethers.getContractFactory("minMusicNFT")
+    PGONFT = await ethers.getContractFactory("MusicNFT")
     ONFTSrcIds = [1, 4] // [startID, endID]... only allowed to mint one ONFT
     ONFTDstIds = [5, 20] // [startID, endID]... only allowed to mint one ONFT
   })
@@ -24,8 +25,20 @@ describe("main", () => {
     lzEndpointSrcMock = await LZEndpointMock.deploy(chainIdSrc)
     lzEndpointDstMock = await LZEndpointMock.deploy(chainIdDst)
 
-    ONFTSrc = await ONFT.deploy(lzEndpointSrcMock.address, ...ONFTSrcIds, chainIdDst)
-    ONFTDst = await ONFT.deploy(lzEndpointDstMock.address, ...ONFTDstIds, chainIdSrc)
+    ONFTSrc = await ETHONFT.deploy(
+      "hibikilla",
+      "record",
+      lzEndpointSrcMock.address,
+      ...ONFTSrcIds,
+      chainIdDst
+    )
+    ONFTDst = await PGONFT.deploy(
+      "hibikilla",
+      "record",
+      lzEndpointDstMock.address,
+      ...ONFTDstIds,
+      chainIdSrc
+    )
 
     lzEndpointSrcMock.setDestLzEndpoint(ONFTDst.address, lzEndpointDstMock.address)
     lzEndpointDstMock.setDestLzEndpoint(ONFTSrc.address, lzEndpointSrcMock.address)
@@ -47,11 +60,13 @@ describe("main", () => {
       await ONFTSrc.mint(mintId, mintAmount)
       expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
     })
-    xit("mintBatch", async () => {
-      const mintIds = [1, 2]
-      const mintAmounts = [1, 2]
+    it("mintBatch", async () => {
+      const mintIds = [1, 2, 3]
+      const mintAmounts = [1, 2, 2]
       await ONFTSrc.mintBatch(mintIds, mintAmounts)
       expect(await ONFTSrc.balanceOf(owner.address, mintIds[0])).to.be.equal(mintAmounts[0])
+      expect(await ONFTSrc.balanceOf(owner.address, mintIds[1])).to.be.equal(mintAmounts[1])
+      expect(await ONFTSrc.balanceOf(owner.address, mintIds[2])).to.be.equal(mintAmounts[2])
     })
     xit("transfer", async () => {
       const mintId = 1
@@ -112,14 +127,14 @@ describe("main", () => {
   })
 
   describe("Sale restriction", () => {
-    it("Confirmation of giveaway/Raffle", async () => {
-      const mintId = 5 
+    xit("Confirmation of giveaway/Raffle", async () => {
+      const mintId = 1 
       const mintAmount = 2; //MaxMint:1
       await expect(ONFTDst.mint(mintId, mintAmount)).to.be.reverted;
     })
   
-    it("Confirmation of presale", async () => {
-      const mintId = 1; 
+    xit("Confirmation of presale", async () => {
+      const mintId = 2; 
       const mintAmount = 2; //MaxMint:3
       await ONFTSrc.mint(mintId, mintAmount)
       await expect(ONFTSrc.mint(mintId, mintAmount)).to.be.revertedWith('Max supply reached');
@@ -127,8 +142,8 @@ describe("main", () => {
       await expect(ONFTSrc.safeTransferFrom(owner.address, alice.address, mintId, mintAmount, 0x0)).to.be.revertedWith("Can't buy same songs more than two record")
     })
   
-    it("Confirmation of public sale", async () => {
-      const mintId = 18;
+    xit("Confirmation of public sale", async () => {
+      const mintId = 17;
       const mintAmount = 5; //MaxMint:5
       await ONFTDst.mint(mintId, mintAmount)
       await ONFTDst.safeTransferFrom(owner.address, alice.address, mintId, 2, 0x0)
@@ -150,7 +165,8 @@ describe("main", () => {
   
       const adapterParam = ethers.utils.solidityPack(["uint16", "uint256"], [1, 225000])
   
-      await ONFTSrc.send(
+      await ONFTSrc.sendFrom(
+        owner.address,
         chainIdDst,
         ethers.utils.solidityPack(["address"], [owner.address]),
         mintId,
@@ -161,32 +177,32 @@ describe("main", () => {
       )
       const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
       await expect(srcAmount).to.be.equal(0)
-  
+
       const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
       await expect(dstAmount).to.be.equal(mintAmount)
     })
 
-    it("mint on Src chian and simpleSend to Dst chain", async () => {
-      const mintId = 1;
+    it("mint on Dst chian and simpleSend to Src chain", async () => {
+      const mintId = 8;
       const mintAmount = 1;
   
-      await ONFTSrc.mint(mintId,mintAmount)
-      expect(await ONFTSrc.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
+      await ONFTDst.mint(mintId,mintAmount)
+      expect(await ONFTDst.balanceOf(owner.address, mintId)).to.be.equal(mintAmount)
   
       // await ONFTSrc.releasedLimitations()
   
       const adapterParam = ethers.utils.solidityPack(["uint16", "uint256"], [1, 225000])
   
-      await ONFTSrc.simpleSend(
+      await ONFTDst.simpleSend(
         mintId,
         mintAmount,
         owner.address,
         adapterParam
       )
-      const srcAmount = await ONFTSrc.balanceOf(owner.address, mintId)
+      const srcAmount = await ONFTDst.balanceOf(owner.address, mintId)
       await expect(srcAmount).to.be.equal(0)
   
-      const dstAmount = await ONFTDst.balanceOf(owner.address, mintId)
+      const dstAmount = await ONFTSrc.balanceOf(owner.address, mintId)
       await expect(dstAmount).to.be.equal(mintAmount)
     })
   })

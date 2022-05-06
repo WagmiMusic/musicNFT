@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ONFT1155.sol";
+import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -19,15 +19,17 @@ contract MusicNFT is ONFT1155 {
     // チェーンごとのIDの範囲
     uint public minMintId;
     uint public maxMintId;
-    // デフォルトのオムニセンド先チェーン
-    uint16 private defaultDstChainId;
+    // // デフォルトのオムニセンド先チェーン
+    // uint16 private defaultDstChainId;
     // 総供給量
     uint256 public totalSupply;
-    //全ての購入制限の可否
+    // 全ての購入制限の可否
     bool private _whenAllReleased = false;
-    //販売状態
+    // 販売状態
     bool private _nowOnSale = false;
-    //画像データ
+    // プレセール状態
+    bool private _nowOnPresale = false;
+    // 画像データ
     string private _uri = "ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json";
     
     //@notice レアリティごとの供給量
@@ -44,8 +46,7 @@ contract MusicNFT is ONFT1155 {
         string memory symbol_,
         address _lzEndpoint,
         uint _minMintId,
-        uint _maxMintId,
-        uint16 _defaultDstChainId
+        uint _maxMintId
     ) ONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
@@ -106,7 +107,6 @@ contract MusicNFT is ONFT1155 {
         _symbol = symbol_;
 
         creator = _msgSender();
-        defaultDstChainId = _defaultDstChainId;
     }
 
     event SoldForGiveaway(
@@ -131,7 +131,7 @@ contract MusicNFT is ONFT1155 {
     );
 
     event NowOnSale(
-        bool _onsale
+        bool onsale
     );
 
     /*
@@ -208,19 +208,6 @@ contract MusicNFT is ONFT1155 {
     }
 
     /*
-    * @title simpleSend
-    * @notice 簡易的なオムニセンド（直コン用）
-    */
-    function simpleSend(
-        uint _tokenId,
-        uint _amount,
-        bytes calldata _toAddress,
-        bytes calldata _adapterParam
-    ) public payable {
-        _send(_msgSender(), defaultDstChainId, _toAddress, _tokenId, _amount, payable(_msgSender()), address(0x0), _adapterParam);
-    }
-
-    /*
     * @title _beforeTokenTransfer
     * @notice transferに連動する購入制限
     * @param operator 実行者アドレス
@@ -251,12 +238,11 @@ contract MusicNFT is ONFT1155 {
         */
         if(_nowOnSale && !_whenAllReleased){
             for (uint256 i = 0; i < ids.length; i++) {
-                } 
                 /*
                 * for giveaway/Raffle
                 * @require 執行者の限定
                 */
-                else if (ids[i] == 1) {
+                if (ids[i] == 1) {
                     require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
                     emit SoldForGiveaway(from, to, ids[i], amounts[i]);
                 }
@@ -266,9 +252,13 @@ contract MusicNFT is ONFT1155 {
                 * @require Allowlist判定
                 */
                 if (ids[i] <= 3){
-                    require(_isAuthenticated[to], "This address is not authenticated");
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    if(_nowOnPresale){
+                        require(_isAuthenticated[to], "This address is not authenticated");
+                        emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    } else {
+                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                    }
                 }
                 /*
                 * for public sale
@@ -292,9 +282,13 @@ contract MusicNFT is ONFT1155 {
                 * @require Allowlist判定
                 */
                 else if (ids[i] <= 10) {
-                    require(_isAuthenticated[to], "This address is not authenticated");
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    if(_nowOnPresale){
+                        require(_isAuthenticated[to], "This address is not authenticated");
+                        emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    } else {
+                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                    }
                 }
                 /*
                 * for presale
@@ -302,9 +296,13 @@ contract MusicNFT is ONFT1155 {
                 * @require Allowlist判定
                 */
                 else if (ids[i] <= 13) {
-                    require(_isAuthenticated[to], "This address is not authenticated");
                     require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    if(_nowOnPresale){
+                        require(_isAuthenticated[to], "This address is not authenticated");
+                        emit SoldForPresale(from, to, ids[i], amounts[i]);
+                    } else {
+                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
+                    }
                 }
                 /*
                 * for public sale
@@ -336,6 +334,14 @@ contract MusicNFT is ONFT1155 {
 
     /*
     * @title releasedLimitations
+    * @notice 全ての購入制限の実行
+    */
+    function setLimitations() public onlyCreatorOrAgent {
+        _whenAllReleased = false;
+    }
+
+    /*
+    * @title releasedLimitations
     * @notice 全ての購入制限の解除
     */
     function releasedLimitations() public onlyCreatorOrAgent {
@@ -343,11 +349,21 @@ contract MusicNFT is ONFT1155 {
     }
 
     /*
-    * @title releasedLimitations
+    * @title startSale
     * @notice 販売開始
     */
     function startSale() public onlyCreatorOrAgent {
         _nowOnSale = true;
+        _nowOnPresale = true;
+        emit NowOnSale(_nowOnSale);
+    }
+
+    /*
+    * @title presaleFinished
+    * @notice プレセール終了
+    */
+    function presaleFinished() public onlyCreatorOrAgent {
+        _nowOnPresale = false;
         emit NowOnSale(_nowOnSale);
     }
 

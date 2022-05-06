@@ -75,7 +75,10 @@ const uploadImage = async () => {
       music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.wav`));
       mfiletype = "wav";
     } else if(fs.existsSync(`./asset/${id}/music.mp3`)) {
-      music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.mp3`, (err,data) => {
+      music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.mp3`));
+      mfiletype = "mp3";
+    } else if(fs.existsSync(`./asset/${id}/music.mp4`)) {
+      music_base64 = await btoa(fs.readFileSync(`./asset/${id}/music.mp4`, (err,data) => {
         console.log(err)
       }));
       mfiletype = "mp3";
@@ -113,7 +116,8 @@ const createMetadata = async () => {
       "name": assetElement[i].name,
       "description": assetElement[i].description,
       "image": imageURL,
-      "animation_url": musicURL
+      "animation_url": musicURL,
+      "attributes": assetElement[i].attributes
     }
     metaDataArray.push(metadata);
   
