@@ -112,6 +112,7 @@ npx hardhat run --network mumbai scripts/setTrustedRemote/str_matic.js
 # send Omnichain NFT
 ### Ethereum to Polygon
 転送するトークン情報を書き込む
+* scripts/omniSend/send_eth.js
 ```js
 let tokenId = TOKEN_ID;
 let amount = TOKEN_AMOUNT;
@@ -121,6 +122,7 @@ npx hardhat run --network rinkeby scripts/omniSend/send_eth.js
 ```
 ### Polygon to Ethereum
 転送するトークン情報を書き込む
+* scripts/omniSend/send_matic.js
 ```js
 let tokenId = TOKEN_ID;
 let amount = TOKEN_AMOUNT;
