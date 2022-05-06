@@ -9,7 +9,7 @@ let tokenIds = [1, 2, 3, 4, 5];
 let amounts = [1, 3 ,2 ,2 ,2];
 
 async function main() {
-  const contractFactory = await ethers.getContractFactory("MusicNFT");
+  const contractFactory = await ethers.getContractFactory("minMusicNFT");
   const contract = await contractFactory.attach(srcAddr);
   // const option = {
   //   gasPrice: 10 * 10**9

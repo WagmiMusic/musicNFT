@@ -1,14 +1,18 @@
 {
-  "bsc-testnet": {
+  "polygon": {
+    "startMintId": 6,
+    "endMintId": 18
+  },
+  "ethereum": {
     "startMintId": 1,
-    "endMintId": 1
+    "endMintId": 5
   },
   "mumbai": {
-    "startMintId": 1,
-    "endMintId": 20
+    "startMintId": 6,
+    "endMintId": 18
   },
   "rinkeby": {
     "startMintId": 1,
-    "endMintId": 20
+    "endMintId": 5
   }
 }

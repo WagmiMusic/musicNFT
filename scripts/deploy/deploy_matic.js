@@ -3,14 +3,14 @@ const dotenv = require("dotenv");
 dotenv.config(); // setup dotenv
 
 //this scripts is for rinkeby Chain
-const LZ_ENDPOINTS = require("../constants/layerzeroEndpoints.json")
-const ONFT_ARGS = require("../constants/onftArgs.json")
+const LZ_ENDPOINTS = require("../../constants/layerzeroEndpoints.json")
+const ONFT_ARGS = require("../../constants/onftArgs.json")
 
 const lzEndpointAddress = LZ_ENDPOINTS[hre.network.name]
 const onftArgs = ONFT_ARGS[hre.network.name]
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("MusicNFT");
+  const factory = await hre.ethers.getContractFactory("minMusicNFT");
   // const option = {
   //   gasPrice: 150 * 10**9
   // }

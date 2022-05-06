@@ -11,13 +11,13 @@ let srcAddr = process.env.ETH_CONTRACT_ADDRESS;
 let dstChainId = 10009;
 let dstAddr = process.env.MATIC_CONTRACT_ADDRESS;
 let adapterParams = ethers.utils.solidityPack(["uint16", "uint256"], [1, 200000]) // default adapterParams example
-let tokenId = 11;
+let tokenId = 1;
 let amount = 1;
 
 async function main() {
   const signers = await ethers.getSigners()
   const owner = signers[0]
-  const contractFactory = await ethers.getContractFactory("MusicNFT");
+  const contractFactory = await ethers.getContractFactory("minMusicNFT");
   const contract = await contractFactory.attach(srcAddr);
   let tx = await contract.sendFrom(
     owner.address, 
@@ -28,7 +28,7 @@ async function main() {
     owner.address, 
     ethers.constants.AddressZero, 
     adapterParams, 
-    {  value: ethers.utils.parseEther("0.05") }
+    {  value: ethers.utils.parseEther("0.4") }
   )
   await tx.wait()
   console.log(`✅ [${hre.network.name}] send(${dstChainId}, ${tokenId}, ${amount})`)
