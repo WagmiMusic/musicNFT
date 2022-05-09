@@ -5,8 +5,8 @@ dotenv.config(); // setup dotenv
 //this scripts is for rinkeby Chain
 const { ethers } = require("hardhat");
 let srcAddr = process.env.ETH_CONTRACT_ADDRESS;
-let tokenIds = [1, 2, 3, 4, 5];
-let amounts = [1, 3 ,2 ,2 ,2];
+let tokenIds = [1, 2];
+let amounts = [5, 5];
 
 async function main() {
   const contractFactory = await ethers.getContractFactory("minMusicNFT");
