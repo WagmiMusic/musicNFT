@@ -23,7 +23,7 @@ module.exports = {
     currency: 'JPY',
     coinmarketcap: 'e9a2f0b2-8e69-4298-8d70-89b9a0064144',
     token: 'ETH',
-    // gasPrice: 40
+    gasPrice: 20
   },
   contractSizer: {
     alphaSort: false,
@@ -32,6 +32,12 @@ module.exports = {
   },
   networks: {
     hardhat: {},
+    ethereum: {
+      url: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
+      gasPrice: 10 * 10**9,
+      chainId: 1,
+      accounts: [ privateKey ]
+    },
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/" + alchemyApiKey,
       gasPrice: 10 * 10**9,
@@ -40,9 +46,10 @@ module.exports = {
     },
     goerli: {
       url: "https://eth-goerli.alchemyapi.io/v2/" + alchemyApiKey,
+      chainId: 5,
       accounts: [ privateKey ]
     },
-    matic_mainnet: {
+    polygon: {
       url: "https://matic-mainnet.chainstacklabs.com",
       chainId: 137,
       accounts: [ privateKey ]

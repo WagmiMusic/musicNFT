@@ -18,7 +18,7 @@ contract MusicNFT is ONFT1155 {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmQNCP7fgcreW2QMf3oGrUJqRn3vNxA36AKa93sV7QuYQB/metadata/{id}.json";
+    string private _uri = "ipfs://QmaBPdQn1DrFxEAAFtpTafg4rWCSbAx6iofyeawLFVu8G4/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -30,24 +30,13 @@ contract MusicNFT is ONFT1155 {
         uint _minMintId,
         uint _maxMintId
     ) ONFT1155(_uri, _lzEndpoint){
-        _AMOUNT_OF_MAX_MINT[1] = 1;
-        _AMOUNT_OF_MAX_MINT[2] = 3;
-        _AMOUNT_OF_MAX_MINT[3] = 2;
-        _AMOUNT_OF_MAX_MINT[4] = 2;
-        _AMOUNT_OF_MAX_MINT[5] = 2;
-        _AMOUNT_OF_MAX_MINT[6] = 1;
+        _AMOUNT_OF_MAX_MINT[1] = 5;
+        _AMOUNT_OF_MAX_MINT[2] = 5;
+        _AMOUNT_OF_MAX_MINT[3] = 5;
+        _AMOUNT_OF_MAX_MINT[4] = 55;
+        _AMOUNT_OF_MAX_MINT[5] = 10;
+        _AMOUNT_OF_MAX_MINT[6] = 10;
         _AMOUNT_OF_MAX_MINT[7] = 10;
-        _AMOUNT_OF_MAX_MINT[8] = 10;
-        _AMOUNT_OF_MAX_MINT[9] = 1;
-        _AMOUNT_OF_MAX_MINT[10] = 2;
-        _AMOUNT_OF_MAX_MINT[11] = 20;
-        _AMOUNT_OF_MAX_MINT[12] = 5;
-        _AMOUNT_OF_MAX_MINT[13] = 5;
-        _AMOUNT_OF_MAX_MINT[14] = 2;
-        _AMOUNT_OF_MAX_MINT[15] = 10;
-        _AMOUNT_OF_MAX_MINT[16] = 5;
-        _AMOUNT_OF_MAX_MINT[17] = 5;
-        _AMOUNT_OF_MAX_MINT[18] = 9;
         minMintId = _minMintId;
         maxMintId = _maxMintId;
         _name = name_;
@@ -107,67 +96,26 @@ contract MusicNFT is ONFT1155 {
         bytes memory data
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-
-        if (from == address(0) || to == address(0) || from != owner()) { return; }
-
+        if (from == address(0) || to == address(0) || from != creator) { return; }
         require(_nowOnSale, "Sale is suspended now");
-        if(_nowOnSale && !_whenAllReleased){
-            for (uint256 i = 0; i < ids.length; i++) {
-                if (ids[i] == 1) {
-                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
-                    emit SoldForGiveaway(from, to, ids[i], amounts[i]);
-                }
-                if (ids[i] <= 3){
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    if(_nowOnPresale){
-                        require(_isAuthenticated[to], "This address is not authenticated");
-                        _isAuthenticated[to] = false;
-                        emit SoldForPresale(from, to, ids[i], amounts[i]);
-                    } else {
-                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                    }
-                }
-                else if (ids[i] <= 5) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                } 
-                else if (ids[i] <= 9) {
-                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
-                    emit SoldForGiveaway(from, to, ids[i], amounts[i]);
-                }
-                else if (ids[i] <= 10) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    if(_nowOnPresale){
-                        require(_isAuthenticated[to], "This address is not authenticated");
-                        _isAuthenticated[to] = false;
-                        emit SoldForPresale(from, to, ids[i], amounts[i]);
-                    } else {
-                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                    }
-                }
-                else if (ids[i] <= 13) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    if(_nowOnPresale){
-                        require(_isAuthenticated[to], "This address is not authenticated");
-                        _isAuthenticated[to] = false;
-                        emit SoldForPresale(from, to, ids[i], amounts[i]);
-                    } else {
-                        emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                    }
-                }
-                else if (ids[i] <= 14) {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);
-                } 
-                else {
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
-                    emit SoldForPublicSale(from, to, ids[i], amounts[i]);  
-                }
+        for (uint256 i = 0; i < ids.length; i++) {
+            if(creator == _msgSender()||_agent[_msgSender()]){
+                emit SoldForGiveaway(from, to, ids[i], amounts[i]);
+            }else if (_nowOnPresale) {
+                require(_isAuthenticated[to], "This address is not authenticated");
+                require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                _isAuthenticated[to] = false;
+                emit SoldForPresale(from, to, ids[i], amounts[i]);
+            }else{
+                require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
         }
     }
-    function addAllowlist(address allowAddr) public onlyCreatorOrAgent {
-        _isAuthenticated[allowAddr] = true;
+    function addAllowlist(address[] memory allowAddr) public onlyCreatorOrAgent {
+        for (uint256 i = 0; i < allowAddr.length; i++) {
+             _isAuthenticated[allowAddr[i]] = true;
+        }
     }
     function setLimitations() public onlyCreatorOrAgent {
         _whenAllReleased = false;
@@ -187,9 +135,6 @@ contract MusicNFT is ONFT1155 {
     function suspendSale() public onlyCreatorOrAgent {
         _nowOnSale = false;
         emit NowOnSale(_nowOnSale);
-    }
-    function reveal() public onlyCreatorOrAgent {
-        _setURI(_uri);
     }
     function EMGreveal(
         string memory _EMGuri

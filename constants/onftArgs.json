@@ -1,18 +1,18 @@
 {
   "polygon": {
-    "startMintId": 6,
-    "endMintId": 18
+    "startMintId": 3,
+    "endMintId": 7
   },
   "ethereum": {
     "startMintId": 1,
-    "endMintId": 5
+    "endMintId": 2
   },
   "mumbai": {
-    "startMintId": 6,
-    "endMintId": 18
+    "startMintId": 3,
+    "endMintId": 7
   },
   "rinkeby": {
     "startMintId": 1,
-    "endMintId": 5
+    "endMintId": 2
   }
 }

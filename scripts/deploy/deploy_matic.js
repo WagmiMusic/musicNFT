@@ -10,7 +10,7 @@ const lzEndpointAddress = LZ_ENDPOINTS[hre.network.name]
 const onftArgs = ONFT_ARGS[hre.network.name]
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("minMusicNFT");
+  const factory = await hre.ethers.getContractFactory("MusicNFT");
   // const option = {
   //   gasPrice: 150 * 10**9
   // }

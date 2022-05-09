@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "..token/minONFT1155.sol";
+import "../token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract minMusicNFT is minONFT1155 {
+contract exminMusicNFT is ONFT1155 {
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -29,7 +29,7 @@ contract minMusicNFT is minONFT1155 {
     bool private _nowOnPresale = false;
     // 画像データ
     string private _uri = "ipfs://QmZUzZ88HX8USBkaGCowxVzasfi4StsEqs5TuxWYWciU7x/metadata/{id}.json";
-    
+
     //@notice レアリティごとの供給量
     mapping(uint256 => uint256) private _supplyOfEach;
     //@notice レアリティごとの最大供給量
@@ -49,21 +49,15 @@ contract minMusicNFT is minONFT1155 {
     ) ONFT1155(_uri, _lzEndpoint){
 // Etherium(rinkeby)
 
-        //fot giveaway/Raffle
-        // NTP Collab female
-        _AMOUNT_OF_MAX_MINT[1] = 1;
-
-        // for presale
         // NTP Collab male
-        _AMOUNT_OF_MAX_MINT[2] = 3;
+        // presale 3
+        // publicsale 2
+        _AMOUNT_OF_MAX_MINT[1] = 5;
         // NTP Collab female
-        _AMOUNT_OF_MAX_MINT[3] = 2;
-
-        // for public sale
-        // NTP Colab male
-        _AMOUNT_OF_MAX_MINT[4] = 2;
-        // NTP Colab female
-        _AMOUNT_OF_MAX_MINT[5] = 2;
+        // giveaway/raffle 1
+        // presale 2
+        // publicsale 2
+        _AMOUNT_OF_MAX_MINT[2] = 5;
 
         minMintId = _minMintId;
         maxMintId = _maxMintId;
@@ -240,8 +234,10 @@ contract minMusicNFT is minONFT1155 {
     * @title addAllowlist
     * @notice AllowListへの追加
     */
-    function addAllowlist(address allowAddr) public onlyCreatorOrAgent {
-        _isAuthenticated[allowAddr] = true;
+    function addAllowlist(address[] memory allowAddr) public onlyCreatorOrAgent {
+        for (uint256 i = 0; i < allowAddr.length; i++) {
+             _isAuthenticated[allowAddr[i]] = true;
+        }
     }
 
     /*
