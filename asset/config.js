@@ -8,13 +8,13 @@ const attributes = {
     {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"Normal"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"Kxrly Miyagi"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
   ],
   NTPCollabFemale: [
-    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"NTP Collab Female"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"NIKO24"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
+    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"Neo Tokyo Rude Gyal"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"NIKO24"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
   ],
   NTPCollabMale: [
-    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"NTP Collab Male"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"NIKO24"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
+    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"Neo Tokyo Rude Boy"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"NIKO24"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
   ],
   CoolRulersCollabAnimation: [
-    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"Cool Rulers Collab Animation"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"MURASAKI"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
+    {"trait_type":"Audio Type","value":"Original Mix"},{"trait_type":"Image Type","value":"Animation by Cool Rulers"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Riddim","value":"Youngbeat's instrumantal"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"MURASAKI"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
   ],
   Acappella: [
     {"trait_type":"Audio Type","value":"Acappella"},{"trait_type":"Image Type","value":"Acappella"},{"trait_type":"Artist","value":"Hibikilla"},{"trait_type":"Featuring Artist","value":"Laya"},{"trait_type":"Mixing","value":"Akio (SRAD)"},{"trait_type":"Mastering","value":"Hiroshi Shiota"},{"trait_type":"Art Work","value":"Kxrly Miyagi"},{"display_type":"date","trait_type":"Release Date","value":"1652454000"}
@@ -30,43 +30,43 @@ const attributes = {
 const assetElement = [
   {
     // 1 NTP Collab male
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Neo Tokyo Rude Boy)", 
     description:share.description, 
     attributes: attributes.NTPCollabMale
   },
   {
     // 2 NTP Collab female
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Neo Tokyo Rude Gyal)", 
     description:share.description, 
     attributes: attributes.NTPCollabFemale
   },
   {
     // 3 CoolRulers Collab Animation
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Animation by Cool Rulers)", 
     description:share.description, 
     attributes: attributes.CoolRulersCollabAnimation
   },
   {
     // 4 Normal
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Original Mix)", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 5 Instrumental
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Instrumental)", 
     description:share.description, 
     attributes: attributes.Normal
   },
   {
     // 6 Acappella
-    name:"Risin' To The Top feat. Laya", 
+    name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Acappella)", 
     description:share.description, 
     attributes: attributes.Acappella
   },
   {
     // 7 Remix
-    name:"Risin' To The Top feat. Laya (Remix)", 
+    name:"Hibikilla - \"Risin' To The Top feat. Namichie\" (Remix)", 
     description:share.description, 
     attributes: attributes.Remix
   }

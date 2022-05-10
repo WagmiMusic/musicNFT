@@ -1,13 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract minMusicNFT is ONFT1155 {
+contract minMusicNFT is ERC1155, Ownable {
     using SafeMath for uint256;
 
     uint public minMintId;
@@ -18,7 +17,7 @@ contract minMusicNFT is ONFT1155 {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmaBPdQn1DrFxEAAFtpTafg4rWCSbAx6iofyeawLFVu8G4/metadata/{id}.json";
+    string private _uri = "ipfs://QmeuDMv5Ywg7y7vkDuGBC1YwML5pU5v6NHFLDfiEyTBssg/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -26,10 +25,9 @@ contract minMusicNFT is ONFT1155 {
     constructor(
         string memory name_,
         string memory symbol_,
-        address _lzEndpoint,
         uint _minMintId,
         uint _maxMintId
-    ) ONFT1155(_uri, _lzEndpoint){
+    ) ERC1155(_uri){
         _AMOUNT_OF_MAX_MINT[1] = 5;
         _AMOUNT_OF_MAX_MINT[2] = 5;
         minMintId = _minMintId;

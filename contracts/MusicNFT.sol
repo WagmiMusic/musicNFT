@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is ONFT1155 {
+contract NusicNFT is ERC1155, Ownable {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -18,7 +18,7 @@ contract MusicNFT is ONFT1155 {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmaBPdQn1DrFxEAAFtpTafg4rWCSbAx6iofyeawLFVu8G4/metadata/{id}.json";
+    string private _uri = "ipfs://QmeuDMv5Ywg7y7vkDuGBC1YwML5pU5v6NHFLDfiEyTBssg/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -26,10 +26,9 @@ contract MusicNFT is ONFT1155 {
     constructor(
         string memory name_,
         string memory symbol_,
-        address _lzEndpoint,
         uint _minMintId,
         uint _maxMintId
-    ) ONFT1155(_uri, _lzEndpoint){
+    ) ERC1155(_uri){
         _AMOUNT_OF_MAX_MINT[1] = 5;
         _AMOUNT_OF_MAX_MINT[2] = 5;
         _AMOUNT_OF_MAX_MINT[3] = 5;
@@ -103,11 +102,19 @@ contract MusicNFT is ONFT1155 {
                 emit SoldForGiveaway(from, to, ids[i], amounts[i]);
             }else if (_nowOnPresale) {
                 require(_isAuthenticated[to], "This address is not authenticated");
-                require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                if(ids[i] == 3){
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                }else{
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                }
                 _isAuthenticated[to] = false;
                 emit SoldForPresale(from, to, ids[i], amounts[i]);
             }else{
-                require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                if(ids[i] == 3){
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
+                }else{
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                }
                 emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
         }

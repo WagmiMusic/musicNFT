@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract exMusicNFT is ONFT1155 {
+contract exMusicNFT is ONFT1155{
     using SafeMath for uint256;
 
     // コントラクトの作成者
@@ -226,7 +226,6 @@ contract exMusicNFT is ONFT1155 {
                 require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
-        }
         }
     }
 

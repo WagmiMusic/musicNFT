@@ -32,12 +32,12 @@ module.exports = {
   },
   networks: {
     hardhat: {},
-    ethereum: {
-      url: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
-      gasPrice: 10 * 10**9,
-      chainId: 1,
-      accounts: [ privateKey ]
-    },
+    // ethereum: {
+    //   url: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
+    //   gasPrice: 10 * 10**9,
+    //   chainId: 1,
+    //   accounts: [ privateKey ]
+    // },
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/" + alchemyApiKey,
       gasPrice: 10 * 10**9,
@@ -52,7 +52,8 @@ module.exports = {
     polygon: {
       url: "https://matic-mainnet.chainstacklabs.com",
       chainId: 137,
-      accounts: [ privateKey ]
+      accounts: [ privateKey ],
+      // gasPrice: 120 * 10**9,
     },
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
