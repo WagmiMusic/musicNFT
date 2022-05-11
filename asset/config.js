@@ -56,7 +56,7 @@ const assetElement = [
     // 5 Instrumental
     name:"Hibikilla - \"Risin' To The Top feat. Laya\" (Instrumental)", 
     description:share.description, 
-    attributes: attributes.Normal
+    attributes: attributes.Instrumental
   },
   {
     // 6 Acappella

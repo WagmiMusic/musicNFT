@@ -2,15 +2,10 @@
 const dotenv = require("dotenv");
 dotenv.config(); // setup dotenv
 
-//this scripts is for mumbai Chain
+//this scripts is for rinkeby Chain
 const { ethers } = require("hardhat");
-let srcAddr = process.env.MATIC_CONTRACT_ADDRESS;
-// let tokenIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-// let amounts = [1, 3 ,2 ,2 ,2, 1, 10, 10, 1, 2, 20, 5, 5, 2, 10, 5, 5, 9];
-// for main production
-let tokenIds = [3, 4, 5, 6];
-let amounts = [5, 55, 10, 10];
-let dstAddress = "0xAd84F848Efb88C7D2aC9e0e8181861a995041D71";
+let srcAddr = process.env.ETH_CONTRACT_ADDRESS;
+let dstAddress = "0x2b10070781B584091Ab90596327Fa41fCA5879D1";
 
 async function main() {
   const contractFactory = await ethers.getContractFactory("MusicNFT");
@@ -20,8 +15,8 @@ async function main() {
   // }
 
   try {
-    let tx = await (await contract.mintBatch(dstAddress, tokenIds, amounts)).wait()
-    console.log(`✅ [${hre.network.name}] mintBatch(${tokenIds}, ${amounts})`)
+    let tx = await (await contract.transferOwnership(dstAddress)).wait()
+    console.log(`✅ [${hre.network.name}] transferOwnership(${dstAddress})`)
     console.log(` tx: ${tx.transactionHash}`)
   } catch (e) {
     if (e.error.message.includes("The trusted source address has already been set for the chainId")) {

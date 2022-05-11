@@ -15,9 +15,9 @@ async function main() {
   //   gasPrice: 150 * 10**9
   // }
   const contract = await factory.deploy(
-    "WAGMI Music",
+    "WAGMI Test",
     "disc",
-    lzEndpointAddress,
+    // lzEndpointAddress,
     onftArgs.startMintId, 
     onftArgs.endMintId
     // option

@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract NusicNFT is ERC1155, Ownable {
+contract MusicNFT is ERC1155, Ownable {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -18,7 +18,7 @@ contract NusicNFT is ERC1155, Ownable {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmeuDMv5Ywg7y7vkDuGBC1YwML5pU5v6NHFLDfiEyTBssg/metadata/{id}.json";
+    string private _uri = "ipfs://QmahQFdHvMRZqR8HQYwFsWNHc6ASS2whgW5PT8nYyvfHUT/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -67,14 +67,15 @@ contract NusicNFT is ERC1155, Ownable {
         }
         _;
     }
-    function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
+    function mint(address _to, uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
         require(_tokenId >= minMintId && _tokenId <= maxMintId, "tokenId is not allowed on this chain");
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
-        _mint(_msgSender(), _tokenId, _amount, "");
+        _mint(_to, _tokenId, _amount, "");
         emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
     }
     function mintBatch(
+        address _to,
         uint256[] memory _tokenIds,
         uint256[] memory _amounts
     ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
@@ -83,7 +84,7 @@ contract NusicNFT is ERC1155, Ownable {
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
             totalSupply += _amounts[i];
         }
-        _mintBatch(_msgSender(), _tokenIds, _amounts, "");
+        _mintBatch(_to, _tokenIds, _amounts, "");
         emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
     }
     function _beforeTokenTransfer(

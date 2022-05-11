@@ -8,11 +8,11 @@
     "endMintId": 2
   },
   "mumbai": {
-    "startMintId": 3,
+    "startMintId": 1,
     "endMintId": 7
   },
   "rinkeby": {
     "startMintId": 1,
-    "endMintId": 2
+    "endMintId": 7
   }
 }

@@ -17,7 +17,7 @@ contract minMusicNFT is ERC1155, Ownable {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmeuDMv5Ywg7y7vkDuGBC1YwML5pU5v6NHFLDfiEyTBssg/metadata/{id}.json";
+    string private _uri = "";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -59,20 +59,21 @@ contract minMusicNFT is ERC1155, Ownable {
         }
         _;
     }
-    function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount)
+    function mint(address _to, uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount)
     {
         _supplyOfEach[_tokenId] += _amount;
-        _mint(_msgSender(), _tokenId, _amount, "");
-        emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
+        _mint(_to, _tokenId, _amount, "");
+        emit TransferSingle(_to, address(0), _msgSender(), _tokenId, _amount);
     }
     function mintBatch(
+        address _to,
         uint256[] memory _tokenIds,
         uint256[] memory _amounts
     ) public onlyCreatorOrAgent supplyCheckBatch(_tokenIds, _amounts){
         for (uint256 i = 0; i < _tokenIds.length; i++) {
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
         }
-        _mintBatch(_msgSender(), _tokenIds, _amounts, "");
+        _mintBatch(_to, _tokenIds, _amounts, "");
         emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
     }
     function _beforeTokenTransfer(

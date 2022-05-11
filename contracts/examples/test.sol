@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract MusicNFT is ERC1155, Ownable {
+contract MVP is ONFT1155 {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -26,10 +26,10 @@ contract MusicNFT is ERC1155, Ownable {
     constructor(
         string memory name_,
         string memory symbol_,
-        uint _lzEndpointAddress,
+        address _lzEndpointAddress,
         uint _minMintId,
         uint _maxMintId
-    ) ERC1155(_uri){
+    ) ONFT1155(_uri, _lzEndpointAddress){
         _AMOUNT_OF_MAX_MINT[1] = 5;
         _AMOUNT_OF_MAX_MINT[2] = 5;
         _AMOUNT_OF_MAX_MINT[3] = 5;
