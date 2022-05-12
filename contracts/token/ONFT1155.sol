@@ -16,7 +16,7 @@ contract ONFT1155 is ONFT1155Core, ERC1155, IONFT1155 {
     }
 
     function _debitFrom(address _from, uint16, bytes memory, uint[] memory _tokenIds, uint[] memory _amounts) internal virtual override {
-        address spender = _msgSender();
+        address spender = msg.sender;
         require(spender == _from || isApprovedForAll(_from, spender), "ONFT1155: send caller is not owner nor approved");
         _burnBatch(_from, _tokenIds, _amounts);
     }

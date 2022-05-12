@@ -17,7 +17,7 @@ async function main() {
   const contract = await factory.deploy(
     "WAGMI Test",
     "disc",
-    // lzEndpointAddress,
+    lzEndpointAddress,
     onftArgs.startMintId, 
     onftArgs.endMintId
     // option

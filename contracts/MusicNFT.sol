@@ -4,10 +4,8 @@ pragma solidity ^0.8.0;
 import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
-contract MusicNFT is ERC1155, Ownable {
+contract MusicNFT is ONFT1155 {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -26,9 +24,10 @@ contract MusicNFT is ERC1155, Ownable {
     constructor(
         string memory name_,
         string memory symbol_,
+        address _lzEndpointAddress,
         uint _minMintId,
         uint _maxMintId
-    ) ERC1155(_uri){
+    ) ONFT1155(_uri, _lzEndpointAddress){
         _AMOUNT_OF_MAX_MINT[1] = 5;
         _AMOUNT_OF_MAX_MINT[2] = 5;
         _AMOUNT_OF_MAX_MINT[3] = 5;
@@ -40,7 +39,7 @@ contract MusicNFT is ERC1155, Ownable {
         maxMintId = _maxMintId;
         _name = name_;
         _symbol = symbol_;
-        creator = _msgSender();
+        creator = msg.sender;
     }
 
     event SoldForGiveaway(address indexed _from,address indexed _to,uint256 _id,uint256 _amount);
@@ -48,7 +47,7 @@ contract MusicNFT is ERC1155, Ownable {
     event SoldForPublicSale(address indexed _from,address indexed _to,uint256 _id,uint256 _amount);
     event NowOnSale(bool onsale);
     modifier onlyCreatorOrAgent(){
-        require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+        require(creator == msg.sender||_agent[msg.sender],"This is not allowed except for creator or agent");
         _;
     }
     modifier supplyCheck(
@@ -72,7 +71,6 @@ contract MusicNFT is ERC1155, Ownable {
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
         _mint(_to, _tokenId, _amount, "");
-        emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
     }
     function mintBatch(
         address _to,
@@ -85,7 +83,6 @@ contract MusicNFT is ERC1155, Ownable {
             totalSupply += _amounts[i];
         }
         _mintBatch(_to, _tokenIds, _amounts, "");
-        emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
     }
     function _beforeTokenTransfer(
         address operator,
@@ -99,11 +96,11 @@ contract MusicNFT is ERC1155, Ownable {
         if (from == address(0) || to == address(0) || from != creator) { return; }
         require(_nowOnSale, "Sale is suspended now");
         for (uint256 i = 0; i < ids.length; i++) {
-            if(creator == _msgSender()||_agent[_msgSender()]){
+            if(creator == msg.sender||_agent[msg.sender]){
                 emit SoldForGiveaway(from, to, ids[i], amounts[i]);
             }else if (_nowOnPresale) {
                 require(_isAuthenticated[to], "This address is not authenticated");
-                if(ids[i] == 3){
+                if(ids[i] <= 3){
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 }else{
                     require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
@@ -111,7 +108,7 @@ contract MusicNFT is ERC1155, Ownable {
                 _isAuthenticated[to] = false;
                 emit SoldForPresale(from, to, ids[i], amounts[i]);
             }else{
-                if(ids[i] == 3){
+                if(ids[i] <= 3){
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 }else{
                     require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");

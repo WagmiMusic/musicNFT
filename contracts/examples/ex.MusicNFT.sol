@@ -91,7 +91,7 @@ contract exMusicNFT is ONFT1155{
         _name = name_;
         _symbol = symbol_;
 
-        creator = _msgSender();
+        creator = msg.sender;
     }
 
     event SoldForGiveaway(
@@ -123,7 +123,7 @@ contract exMusicNFT is ONFT1155{
     * @notice 執行者を認証する(コントラクトの作成者と許可された代行者のみ)
     */
     modifier onlyCreatorOrAgent(){
-        require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+        require(creator == msg.sender||_agent[msg.sender],"This is not allowed except for creator or agent");
         _;
     }
 
@@ -166,9 +166,9 @@ contract exMusicNFT is ONFT1155{
         _supplyOfEach[_tokenId] += _amount;
         totalSupply += _amount;
 
-        _mint(_msgSender(), _tokenId, _amount, "");
+        _mint(msg.sender, _tokenId, _amount, "");
 
-        emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
+        emit TransferSingle(msg.sender, address(0), msg.sender, _tokenId, _amount);
     }
     
     /*
@@ -187,9 +187,9 @@ contract exMusicNFT is ONFT1155{
             totalSupply += _amounts[i];
         }
 
-        _mintBatch(_msgSender(), _tokenIds, _amounts, "");
+        _mintBatch(msg.sender, _tokenIds, _amounts, "");
 
-        emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
+        emit TransferBatch(msg.sender, address(0), msg.sender, _tokenIds, _amounts);
     }
 
     /*
@@ -215,7 +215,7 @@ contract exMusicNFT is ONFT1155{
         if (from == address(0) || to == address(0) || from != creator) { return; }
         require(_nowOnSale, "Sale is suspended now");
         for (uint256 i = 0; i < ids.length; i++) {
-            if(creator == _msgSender()||_agent[_msgSender()]){
+            if(creator == msg.sender||_agent[msg.sender]){
                 emit SoldForGiveaway(from, to, ids[i], amounts[i]);
             }else if (_nowOnPresale) {
                 require(_isAuthenticated[to], "This address is not authenticated");

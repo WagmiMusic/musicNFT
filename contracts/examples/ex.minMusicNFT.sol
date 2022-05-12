@@ -65,7 +65,7 @@ contract exminMusicNFT is ONFT1155 {
         _name = name_;
         _symbol = symbol_;
 
-        creator = _msgSender();
+        creator = msg.sender;
         defaultDstChainId = _defaultDstChainId;
     }
 
@@ -98,7 +98,7 @@ contract exminMusicNFT is ONFT1155 {
     * @notice 執行者を認証する(コントラクトの作成者と許可された代行者のみ)
     */
     modifier onlyCreatorOrAgent(){
-        require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+        require(creator == msg.sender||_agent[msg.sender],"This is not allowed except for creator or agent");
         _;
     }
 
@@ -140,9 +140,7 @@ contract exminMusicNFT is ONFT1155 {
     */
     function mint(uint256 _tokenId, uint256 _amount) public onlyCreatorOrAgent supplyCheck(_tokenId, _amount){
         _supplyOfEach[_tokenId] += _amount;
-        _mint(_msgSender(), _tokenId, _amount, "");
-
-        emit TransferSingle(_msgSender(), address(0), _msgSender(), _tokenId, _amount);
+        _mint(msg.sender, _tokenId, _amount, "");
     }
     
     /*
@@ -159,9 +157,7 @@ contract exminMusicNFT is ONFT1155 {
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
         }
 
-        _mintBatch(_msgSender(), _tokenIds, _amounts, "");
-
-        emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
+        _mintBatch(msg.sender, _tokenIds, _amounts, "");
     }
 
     /*
@@ -200,7 +196,7 @@ contract exminMusicNFT is ONFT1155 {
                 * @require 執行者の限定
                 */
                 if (ids[i] == 1) {
-                    require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+                    require(creator == msg.sender||_agent[msg.sender],"This is not allowed except for creator or agent");
                     emit SoldForGiveaway(from, to, ids[i], amounts[i]);
                 }
                 /*

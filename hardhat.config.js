@@ -5,8 +5,8 @@ require('@nomiclabs/hardhat-ethers');
 require("hardhat-gas-reporter");
 require('hardhat-contract-sizer');
 require("solidity-coverage");
-require('hardhat-deploy');
-require('hardhat-deploy-ethers');
+// require('hardhat-deploy');
+// require('hardhat-deploy-ethers');
 // require('./tasks');
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
   },
   contractSizer: {
     alphaSort: false,
-    runOnCompile: true,
+    runOnCompile: false,
     disambiguatePaths: false,
   },
   networks: {
@@ -62,7 +62,7 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: etherscanApiKey // EtherscanでVerifyする際にコメントアウトを外して使用
-    // apiKey: polygonscanApiKey // PolygonscanでVerifyする際にコメントアウトを外して使用
+    // apiKey: etherscanApiKey // EtherscanでVerifyする際にコメントアウトを外して使用
+    apiKey: polygonscanApiKey // PolygonscanでVerifyする際にコメントアウトを外して使用
   }
 };

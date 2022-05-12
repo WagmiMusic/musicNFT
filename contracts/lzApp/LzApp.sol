@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
-
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/ILayerZeroReceiver.sol";
 import "../interfaces/ILayerZeroUserApplicationConfig.sol";
 import "../interfaces/ILayerZeroEndpoint.sol";
@@ -10,8 +8,9 @@ import "../interfaces/ILayerZeroEndpoint.sol";
 /*
  * a generic LzReceiver implementation
  */
-abstract contract LzApp is Ownable, ILayerZeroReceiver, ILayerZeroUserApplicationConfig {
+abstract contract LzApp is ILayerZeroReceiver, ILayerZeroUserApplicationConfig {
     ILayerZeroEndpoint public immutable lzEndpoint;
+    address owner;
 
     mapping(uint16 => bytes) public trustedRemoteLookup;
 
@@ -19,11 +18,17 @@ abstract contract LzApp is Ownable, ILayerZeroReceiver, ILayerZeroUserApplicatio
 
     constructor(address _endpoint) {
         lzEndpoint = ILayerZeroEndpoint(_endpoint);
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Ownable: caller is not the owner");
+        _;
     }
 
     function lzReceive(uint16 _srcChainId, bytes memory _srcAddress, uint64 _nonce, bytes memory _payload) public virtual override {
         // lzReceive must be called by the endpoint for security
-        require(_msgSender() == address(lzEndpoint));
+        require(msg.sender == address(lzEndpoint));
 
         bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
         // if will still block the message pathway from (srcChainId, srcAddress). should not receive message from untrusted remote.

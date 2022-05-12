@@ -17,7 +17,7 @@ contract minMusicNFT is ERC1155, Ownable {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "";
+    string private _uri = "ipfs://QmahQFdHvMRZqR8HQYwFsWNHc6ASS2whgW5PT8nYyvfHUT/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -34,7 +34,7 @@ contract minMusicNFT is ERC1155, Ownable {
         maxMintId = _maxMintId;
         _name = name_;
         _symbol = symbol_;
-        creator = _msgSender();
+        creator = msg.sender;
     }
 
     event SoldForGiveaway(address indexed _from,address indexed _to,uint256 _id,uint256 _amount);
@@ -42,7 +42,7 @@ contract minMusicNFT is ERC1155, Ownable {
     event SoldForPublicSale(address indexed _from,address indexed _to,uint256 _id,uint256 _amount);
     event NowOnSale(bool onsale);
     modifier onlyCreatorOrAgent(){
-        require(creator == _msgSender()||_agent[_msgSender()],"This is not allowed except for creator or agent");
+        require(creator == msg.sender||_agent[msg.sender],"This is not allowed except for creator or agent");
         _;
     }
     modifier supplyCheck(uint256 _tokenId,uint256 _amount)
@@ -63,7 +63,6 @@ contract minMusicNFT is ERC1155, Ownable {
     {
         _supplyOfEach[_tokenId] += _amount;
         _mint(_to, _tokenId, _amount, "");
-        emit TransferSingle(_to, address(0), _msgSender(), _tokenId, _amount);
     }
     function mintBatch(
         address _to,
@@ -74,7 +73,6 @@ contract minMusicNFT is ERC1155, Ownable {
             _supplyOfEach[_tokenIds[i]] += _amounts[i];
         }
         _mintBatch(_to, _tokenIds, _amounts, "");
-        emit TransferBatch(_msgSender(), address(0), _msgSender(), _tokenIds, _amounts);
     }
     function _beforeTokenTransfer(
         address operator,
@@ -88,7 +86,7 @@ contract minMusicNFT is ERC1155, Ownable {
         if (from == address(0) || to == address(0) || from != creator) { return; }
         require(_nowOnSale, "Sale is suspended now");
         for (uint256 i = 0; i < ids.length; i++) {
-            if(creator == _msgSender()||_agent[_msgSender()]){
+            if(creator == msg.sender||_agent[msg.sender]){
                 emit SoldForGiveaway(from, to, ids[i], amounts[i]);
             }else if (_nowOnPresale) {
                 require(_isAuthenticated[to], "This address is not authenticated");
