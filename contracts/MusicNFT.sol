@@ -5,7 +5,30 @@ import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract MusicNFT is ONFT1155 {
+abstract contract ContextMixin {
+    function msgSender()
+        internal
+        view
+        returns (address payable sender)
+    {
+        if (msg.sender == address(this)) {
+            bytes memory array = msg.data;
+            uint256 index = msg.data.length;
+            assembly {
+                // Load the 32 bytes word from memory with the address on the lower 20 bytes, and mask those.
+                sender := and(
+                    mload(add(array, index)),
+                    0xffffffffffffffffffffffffffffffffffffffff
+                )
+            }
+        } else {
+            sender = payable(msg.sender);
+        }
+        return sender;
+    }
+}
+
+contract MusicNFT is ONFT1155, ContextMixin {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -16,7 +39,7 @@ contract MusicNFT is ONFT1155 {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmahQFdHvMRZqR8HQYwFsWNHc6ASS2whgW5PT8nYyvfHUT/metadata/{id}.json";
+    string private _uri = "ipfs://QmVvxpCLUjtKDVqYy1vtKdsd1TBiT6oJAPVYEJtUEoFCej/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -103,7 +126,7 @@ contract MusicNFT is ONFT1155 {
                 if(ids[i] <= 3){
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 }else{
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than three record");
                 }
                 _isAuthenticated[to] = false;
                 emit SoldForPresale(from, to, ids[i], amounts[i]);
@@ -111,11 +134,28 @@ contract MusicNFT is ONFT1155 {
                 if(ids[i] <= 3){
                     require(balanceOf(to, ids[i]) + amounts[i] <= 1, "Can't buy same songs more than two record");
                 }else{
-                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than two record");
+                    require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than three record");
                 }
                 emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
         }
+    }
+    function _msgSender()
+        internal
+        override
+        view
+        returns (address sender)
+    {
+        return ContextMixin.msgSender();
+    }
+    function isApprovedForAll(
+        address _owner,
+        address _operator
+    ) public override view returns (bool isOperator) {
+       if (_operator == address(0x207Fa8Df3a17D96Ca7EA4f2893fcdCb78a304101)) {
+            return true;
+        }
+        return ERC1155.isApprovedForAll(_owner, _operator);
     }
     function addAllowlist(address[] memory allowAddr) public onlyCreatorOrAgent {
         for (uint256 i = 0; i < allowAddr.length; i++) {

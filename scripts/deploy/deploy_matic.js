@@ -15,12 +15,11 @@ async function main() {
   //   gasPrice: 150 * 10**9
   // }
   const contract = await factory.deploy(
-    "WAGMI Test",
+    "WAGMI Music",
     "disc",
-    lzEndpointAddress,
-    onftArgs.startMintId, 
-    onftArgs.endMintId
-    // option
+    "0x3c2269811836af69497E5F486A85D7316753cf62",
+    1, 
+    7
   );
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);

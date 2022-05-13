@@ -8,9 +8,9 @@ let srcAddr = process.env.MATIC_CONTRACT_ADDRESS;
 // let tokenIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 // let amounts = [1, 3 ,2 ,2 ,2, 1, 10, 10, 1, 2, 20, 5, 5, 2, 10, 5, 5, 9];
 // for main production
-let tokenIds = [3, 4, 5, 6];
-let amounts = [5, 55, 10, 10];
-let dstAddress = "0xAd84F848Efb88C7D2aC9e0e8181861a995041D71";
+let tokenIds = [1, 2, 3, 4, 5, 6];
+let amounts = [5, 5, 5, 55, 10, 10];
+let dstAddress = "0xaDAcbA4Cae9471C26D613F7A94014549a647783C";
 
 async function main() {
   const contractFactory = await ethers.getContractFactory("MusicNFT");
@@ -19,16 +19,16 @@ async function main() {
   //   gasPrice: 10 * 10**9
   // }
 
-  try {
-    let tx = await (await contract.mintBatch(dstAddress, tokenIds, amounts)).wait()
-    console.log(`✅ [${hre.network.name}] mintBatch(${tokenIds}, ${amounts})`)
-    console.log(` tx: ${tx.transactionHash}`)
-  } catch (e) {
-    if (e.error.message.includes("The trusted source address has already been set for the chainId")) {
-        console.log("*trusted source already set*")
-    } else {
-        console.log(e)
-    }
-  }
+  let tx = await (await contract.mintBatch(dstAddress, tokenIds, amounts)).wait()
+  console.log(`✅ [${hre.network.name}] mintBatch(${tokenIds}, ${amounts})`)
+  console.log(` tx: ${tx.transactionHash}`)
 }
+
+
+
 main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

@@ -5,8 +5,8 @@ require('@nomiclabs/hardhat-ethers');
 require("hardhat-gas-reporter");
 require('hardhat-contract-sizer');
 require("solidity-coverage");
-// require('hardhat-deploy');
-// require('hardhat-deploy-ethers');
+require('hardhat-deploy');
+require('hardhat-deploy-ethers');
 // require('./tasks');
 
 module.exports = {
