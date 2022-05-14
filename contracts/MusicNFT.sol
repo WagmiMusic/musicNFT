@@ -5,30 +5,7 @@ import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-abstract contract ContextMixin {
-    function msgSender()
-        internal
-        view
-        returns (address payable sender)
-    {
-        if (msg.sender == address(this)) {
-            bytes memory array = msg.data;
-            uint256 index = msg.data.length;
-            assembly {
-                // Load the 32 bytes word from memory with the address on the lower 20 bytes, and mask those.
-                sender := and(
-                    mload(add(array, index)),
-                    0xffffffffffffffffffffffffffffffffffffffff
-                )
-            }
-        } else {
-            sender = payable(msg.sender);
-        }
-        return sender;
-    }
-}
-
-contract MusicNFT is ONFT1155, ContextMixin {
+contract MusicNFT is ONFT1155 {
     using SafeMath for uint256;
     address creator;
     string private _name;
@@ -107,6 +84,35 @@ contract MusicNFT is ONFT1155, ContextMixin {
         }
         _mintBatch(_to, _tokenIds, _amounts, "");
     }
+    function transferCheck(
+        address from, 
+        address to, 
+        uint id, 
+        uint amount
+        ) public view returns(string memory){
+        if (from == address(0) || to == address(0) || from != creator || _whenAllReleased) { return("not a restriction case"); }
+        require(_nowOnSale, "Sale is suspended now");
+        if(creator == msg.sender||_agent[msg.sender]){
+            return("giveaway case");
+        }else if (_nowOnPresale) {
+            require(_isAuthenticated[to], "This address is not authenticated");
+            if(id <= 3){
+                require(balanceOf(to, id) + amount <= 1, "Can't buy same songs more than two record");
+                return("presale case and id is lower than 4");
+            }else{
+                require(balanceOf(to, id) + amount <= 2, "Can't buy same songs more than three record");
+                return("presale case and id is higher than 3");
+            }
+        }else{
+            if(id <= 3){
+                require(balanceOf(to, id) + amount <= 1, "Can't buy same songs more than two record");
+                return("public sale case and id is lower than 4");
+            }else{
+                require(balanceOf(to, id) + amount <= 2, "Can't buy same songs more than three record");
+                return("public sale case and id is higher than 3");
+            }
+        }
+    }
     function _beforeTokenTransfer(
         address operator,
         address from,
@@ -116,10 +122,10 @@ contract MusicNFT is ONFT1155, ContextMixin {
         bytes memory data
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-        if (from == address(0) || to == address(0) || from != creator) { return; }
+        if (from == address(0) || to == address(0) || from != creator || _whenAllReleased) { return; }
         require(_nowOnSale, "Sale is suspended now");
         for (uint256 i = 0; i < ids.length; i++) {
-            if(creator == msg.sender||_agent[msg.sender]){
+            if(creator == _msgSender()||_agent[_msgSender()]){
                 emit SoldForGiveaway(from, to, ids[i], amounts[i]);
             }else if (_nowOnPresale) {
                 require(_isAuthenticated[to], "This address is not authenticated");
@@ -128,7 +134,6 @@ contract MusicNFT is ONFT1155, ContextMixin {
                 }else{
                     require(balanceOf(to, ids[i]) + amounts[i] <= 2, "Can't buy same songs more than three record");
                 }
-                _isAuthenticated[to] = false;
                 emit SoldForPresale(from, to, ids[i], amounts[i]);
             }else{
                 if(ids[i] <= 3){
@@ -139,14 +144,6 @@ contract MusicNFT is ONFT1155, ContextMixin {
                 emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
         }
-    }
-    function _msgSender()
-        internal
-        override
-        view
-        returns (address sender)
-    {
-        return ContextMixin.msgSender();
     }
     function isApprovedForAll(
         address _owner,

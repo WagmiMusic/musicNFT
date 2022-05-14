@@ -23,21 +23,21 @@ module.exports = {
     currency: 'JPY',
     coinmarketcap: 'e9a2f0b2-8e69-4298-8d70-89b9a0064144',
     token: 'ETH',
-    gasPrice: 20
+    gasPrice: 30
   },
   contractSizer: {
     alphaSort: false,
-    runOnCompile: false,
+    runOnCompile: true,
     disambiguatePaths: false,
   },
   networks: {
     hardhat: {},
-    // ethereum: {
-    //   url: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
-    //   gasPrice: 10 * 10**9,
-    //   chainId: 1,
-    //   accounts: [ privateKey ]
-    // },
+    ethereum: {
+      url: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
+      // gasPrice: 25 * 10**9,
+      chainId: 1,
+      accounts: [ privateKey ]
+    },
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/" + alchemyApiKey,
       gasPrice: 10 * 10**9,
@@ -62,7 +62,7 @@ module.exports = {
     }
   },
   etherscan: {
-    // apiKey: etherscanApiKey // EtherscanでVerifyする際にコメントアウトを外して使用
-    apiKey: polygonscanApiKey // PolygonscanでVerifyする際にコメントアウトを外して使用
+    apiKey: etherscanApiKey // EtherscanでVerifyする際にコメントアウトを外して使用
+    // apiKey: polygonscanApiKey // PolygonscanでVerifyする際にコメントアウトを外して使用
   }
 };

@@ -17,9 +17,9 @@ async function main() {
   const contract = await factory.deploy(
     "WAGMI Music",
     "disc",
-    "0x3c2269811836af69497E5F486A85D7316753cf62",
-    1, 
-    7
+    lzEndpointAddress,
+    onftArgs.startMintId, 
+    onftArgs.endMintId
   );
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);

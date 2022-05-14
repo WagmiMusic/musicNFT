@@ -1,12 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./token/ONFT1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
-contract minMusicNFT is ERC1155, Ownable {
+contract minMusicNFT is ONFT1155 {
     using SafeMath for uint256;
 
     uint public minMintId;
@@ -17,7 +16,7 @@ contract minMusicNFT is ERC1155, Ownable {
     bool private _whenAllReleased = false;
     bool private _nowOnSale = false;
     bool private _nowOnPresale = false;
-    string private _uri = "ipfs://QmahQFdHvMRZqR8HQYwFsWNHc6ASS2whgW5PT8nYyvfHUT/metadata/{id}.json";
+    string private _uri = "ipfs://QmVvxpCLUjtKDVqYy1vtKdsd1TBiT6oJAPVYEJtUEoFCej/metadata/{id}.json";
     mapping(uint256 => uint256) private _supplyOfEach;
     mapping(uint256 => uint256) private _AMOUNT_OF_MAX_MINT;
     mapping(address => bool) private _isAuthenticated;
@@ -25,9 +24,10 @@ contract minMusicNFT is ERC1155, Ownable {
     constructor(
         string memory name_,
         string memory symbol_,
+        address _lzEndpointAddress,
         uint _minMintId,
         uint _maxMintId
-    ) ERC1155(_uri){
+    ) ONFT1155(_uri, _lzEndpointAddress){
         _AMOUNT_OF_MAX_MINT[1] = 5;
         _AMOUNT_OF_MAX_MINT[2] = 5;
         minMintId = _minMintId;
@@ -83,7 +83,7 @@ contract minMusicNFT is ERC1155, Ownable {
         bytes memory data
     ) internal override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-        if (from == address(0) || to == address(0) || from != creator) { return; }
+        if (from == address(0) || to == address(0) || from != creator || _whenAllReleased) { return; }
         require(_nowOnSale, "Sale is suspended now");
         for (uint256 i = 0; i < ids.length; i++) {
             if(creator == msg.sender||_agent[msg.sender]){
@@ -98,6 +98,15 @@ contract minMusicNFT is ERC1155, Ownable {
                 emit SoldForPublicSale(from, to, ids[i], amounts[i]);
             }
         }
+    }
+    function isApprovedForAll(
+        address _owner,
+        address _operator
+    ) public override view returns (bool isOperator) {
+       if (_operator == address(0xa5409ec958C83C3f309868babACA7c86DCB077c1)) {
+            return true;
+        }
+        return ERC1155.isApprovedForAll(_owner, _operator);
     }
     function addAllowlist(address[] memory allowAddr) public onlyCreatorOrAgent {
         for (uint256 i = 0; i < allowAddr.length; i++) {

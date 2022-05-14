@@ -10,17 +10,17 @@ const lzEndpointAddress = LZ_ENDPOINTS[hre.network.name]
 const onftArgs = ONFT_ARGS[hre.network.name]
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("MusicNFT");
-  // const option = {
-  //   gasPrice: 150 * 10**9
-  // }
+  const factory = await hre.ethers.getContractFactory("minMusicNFT");
+  const option = {
+    gasPrice: 25 * 10**9
+  }
   const contract = await factory.deploy(
     "WAGMI Music",
     "disc",
     lzEndpointAddress,
     onftArgs.startMintId, 
-    onftArgs.endMintId
-    // option
+    onftArgs.endMintId,
+    option
   );
   await contract.deployed();
   console.log("NFT deployed to:", contract.address);
